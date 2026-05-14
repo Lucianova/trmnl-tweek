@@ -1,0 +1,54 @@
+{% assign today = trmnl.system.timestamp_utc | plus: trmnl.user.utc_offset | date: "%Y-%m-%d" %}
+
+<div class="layout layout--col layout--stretch">
+  {% if error %}
+    <div class="layout layout--center h--full">
+      <span class="title title--small">Unable to load tasks</span>
+    </div>
+  {% else %}
+    <div class="grid grid--cols-7 gap--none" style="flex:1; overflow:hidden">
+      {% for day in days %}
+        <div class="flex flex--col" style="{% unless forloop.last %}border-right:1px solid black;{% endunless %} overflow:hidden">
+
+          {% comment %} Column header — inverted background for today {% endcomment %}
+          {% if day.full_date == today %}
+            <div class="bg--black flex flex--row flex--center-x gap--xsmall py--1" style="border-bottom:1px solid black">
+              <span class="label label--xsmall label--inverted text--bold">{{ day.name }}</span>
+              <span class="label label--xsmall label--inverted">{{ day.date }}</span>
+            </div>
+          {% else %}
+            <div class="flex flex--row flex--center-x gap--xsmall py--1" style="border-bottom:1px solid black">
+              <span class="label label--xsmall text--bold">{{ day.name }}</span>
+              <span class="label label--xsmall">{{ day.date }}</span>
+            </div>
+          {% endif %}
+
+          {% comment %} Task list {% endcomment %}
+          <div class="flex flex--col px--1" style="flex:1; overflow:hidden; padding-top:3px; gap:2px">
+            {% for task in day.tasks %}
+              {% if task.done %}
+                <span class="label label--xsmall" style="text-decoration:line-through; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block">
+                  {% if task.gcal %}<strong>{{ task.time }}</strong> {% endif %}{{ task.text }}
+                </span>
+              {% else %}
+                <span class="label label--xsmall" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block">
+                  {% if task.gcal %}<strong>{{ task.time }}</strong> {% endif %}{{ task.text }}
+                </span>
+              {% endif %}
+            {% endfor %}
+
+            {% if day.overflow > 0 %}
+              <span class="label label--xsmall label--gray" style="margin-top:auto">+{{ day.overflow }} more</span>
+            {% endif %}
+          </div>
+
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+<div class="title_bar">
+  <img class="image" src="https://trmnl.com/images/plugins/trmnl--render.svg" />
+  <span class="title">Tweek — {{ week_label }}</span>
+</div>
