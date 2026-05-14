@@ -1,0 +1,45 @@
+---
+strategy: polling
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
+polling_verb: post
+framework_version: 3.1.1
+serverless_language: javascript
+polling_url: ''
+polling_headers: ''
+polling_body: ''
+id: 305419
+name: Tweek
+refresh_interval: 60
+custom_fields:
+  - name: refresh_token
+    label: Refresh Token
+    type: password
+    required: true
+    placeholder: 'AMf-vBw...'
+    instructions: >
+      Run the setup script to obtain this value. See plugin description for link.
+      Update if you change your Tweek password.
+  - name: calendar_name
+    label: Calendar Name
+    type: text
+    required: false
+    placeholder: 'My calendar'
+    instructions: Leave blank to use your default calendar.
+  - name: week_start_day
+    label: Week Start Day
+    type: select
+    required: true
+    default: Monday
+    options:
+      - Monday
+      - Sunday
+  - name: time_format
+    label: Time Format
+    type: select
+    required: true
+    default: 12h
+    options:
+      - 12h
+      - 24h
