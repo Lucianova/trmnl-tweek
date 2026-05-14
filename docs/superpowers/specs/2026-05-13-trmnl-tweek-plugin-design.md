@@ -122,8 +122,8 @@ On failure: `error` is set to a message string and `days` is an empty array.
 
 - **Native Tweek task** (`gcal: false`): title only
 - **Google Calendar event** (`gcal: true`): time prefix + title (e.g., `7:00 PM Cine Aldrey MJ`)
-  - Time is extracted from the `isoDate` string directly (timezone offset is already embedded)
-  - Format follows the `timeFormat` setting (`12h` or `24h`)
+  - Time is parsed from the `isoDate` string using the embedded timezone offset (e.g. `2026-05-12T19:00:00-03:00` → `19:00` local). No conversion to UTC needed.
+  - Formatted per the `timeFormat` setting: `7:00 PM` (12h) or `19:00` (24h)
 - **Completed** (`done: true`): strikethrough text
 - Long titles are truncated with CSS `text-overflow: ellipsis`
 - Display order follows the array order returned by the API (preserves user's drag-to-reorder arrangement)
