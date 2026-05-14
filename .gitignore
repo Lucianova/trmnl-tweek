@@ -1,0 +1,11 @@
+# Exploratory scripts with hardcoded credentials — do not commit
+fetchTasks.ts
+refreshToken.ts
+requestIdToken.ts
+fetchCalendars.ts
+
+# Dependencies
+node_modules/
+
+# trmnlp binary
+tweek/bin/
