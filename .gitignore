@@ -4,6 +4,9 @@ refreshToken.ts
 requestIdToken.ts
 fetchCalendars.ts
 
+# Internal planning/spec docs
+docs/superpowers/
+
 # Dependencies
 node_modules/
 
