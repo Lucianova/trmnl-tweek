@@ -4,7 +4,7 @@
 
 **Goal:** Build a self-contained TRMNL private plugin that displays a user's weekly Tweek tasks on a full-size e-ink display, using TRMNL serverless polling for data and a 7-column Liquid/HTML template for the UI.
 
-**Architecture:** A TRMNL serverless function handles auth (Firebase token refresh), calendar resolution, and task fetching from the Tweek API on every poll. Pure utility functions for date computation, task transformation, and calendar resolution are developed with TDD in `src/utils.js`. The serverless file `tweek/src/serverless.js` is self-contained (no ES module imports) for TRMNL compatibility — pure functions are inlined from `utils.js`. The Liquid template in `tweek/src/markup.html` renders a 7-column week grid.
+**Architecture:** A TRMNL serverless function handles auth (Firebase token refresh), calendar resolution, and task fetching from the Tweek API on every poll. Pure utility functions for date computation, task transformation, and calendar resolution are developed with TDD in `src/utils.js`. The serverless file `tweek/src/serverless.js` is self-contained (no ES module imports) for TRMNL compatibility — pure functions are inlined from `utils.js`. The Liquid template in `tweek/src/full.liquid` renders a 7-column week grid.
 
 **Tech Stack:** Node.js 22, JavaScript (ES module for `src/utils.js`, plain function declarations for `tweek/src/serverless.js`), Vitest for testing, Liquid/HTML with TRMNL framework v3.1.1, trmnlp CLI for local preview.
 
@@ -23,7 +23,7 @@
 | `tweek/src/settings.yml` | Modify | Add custom form fields, set `serverless_language`, fix `refresh_interval` |
 | `tweek/.trmnlp.yml` | Modify | Add `custom_fields` test values and `trmnl` mock object |
 | `tweek/src/serverless.js` | Create | Self-contained TRMNL serverless function (pure functions inlined + HTTP logic) |
-| `tweek/src/markup.html` | Create | Liquid template: 7-column week layout |
+| `tweek/src/full.liquid` | Create | Liquid template: 7-column week layout |
 
 ---
 
@@ -759,11 +759,11 @@ git commit -m "feat: configure TRMNL plugin settings and form fields"
 ## Task 7: Liquid Markup Template
 
 **Files:**
-- Create: `tweek/src/markup.html`
+- Create: `tweek/src/full.liquid`
 
 The template uses TRMNL framework v3.1 utility classes. The design system reference is at https://trmnl.com/framework/docs/3.1 — check it for the exact class names for grid, inverted headers, and typography before writing the final version. The structure below is the semantic intent; adjust class names to match the actual design system.
 
-- [ ] **Step 1: Create `tweek/src/markup.html`**
+- [ ] **Step 1: Create `tweek/src/full.liquid`**
 
 ```html
 {% assign today = trmnl.system.timestamp_utc | plus: trmnl.user.utc_offset | date: "%Y-%m-%d" %}
@@ -834,7 +834,7 @@ Note: `label`, `label--small`, `label--bold`, `label--muted`, `view`, `view--ful
 - [ ] **Step 2: Commit**
 
 ```bash
-git add tweek/src/markup.html
+git add tweek/src/full.liquid
 git commit -m "feat: add 7-column week layout markup template"
 ```
 

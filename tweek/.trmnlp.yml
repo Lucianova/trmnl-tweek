@@ -1,0 +1,88 @@
+# TRMNLP configuration
+# {{ env.VARIABLE }} interpolation is available here
+---
+watch:
+  - .trmnlp.yml
+  - src
+
+# Disable transform so mock variables below are used for local UI preview.
+# Remove this line (or set to 'enabled') to test with real Tweek API calls.
+transform_runtime: disabled
+
+# Test values for custom form fields (used during local development only)
+custom_fields:
+  refresh_token: "your_refresh_token_here"
+  calendar_name: "My calendar"
+  week_start_day: "Monday"
+  time_format: "12h"
+
+# Mock the {{ trmnl }} global for local preview
+variables:
+  trmnl:
+    user:
+      name: "Johnathan Lewis"
+      time_zone: "Buenos Aires"
+      time_zone_iana: "America/Argentina/Buenos_Aires"
+      utc_offset: -10800
+    device:
+      height: 480
+      width: 800
+    system:
+      timestamp_utc: 1779848000
+    plugin_settings:
+      instance_name: "Tweek"
+      strategy: "polling"
+      dark_mode: "no"
+  week_label: "May 25–31"
+  error: null
+  days:
+    - name: Mon
+      date: "11"
+      full_date: "2026-05-25"
+      overflow: 0
+      tasks:
+        - { text: "Morning standup", time: "9:00 AM", gcal: true, done: false }
+        - { text: "Write unit tests", time: null, gcal: false, done: true }
+    - name: Tue
+      date: "12"
+      full_date: "2026-05-26"
+      overflow: 0
+      tasks:
+        - { text: "Watch a movie", time: "7:00 PM", gcal: true, done: false }
+    - name: Wed
+      date: "13"
+      full_date: "2026-05-27"
+      overflow: 0
+      tasks:
+        - { text: "TRMNL Plugin", time: null, gcal: false, done: false }
+        - { text: "Morning standup", time: "9:00 AM", gcal: true, done: false } 
+    - name: Thu
+      date: "14"
+      full_date: "2026-05-28"
+      overflow: 0
+      tasks:
+        - { text: "Get tickets for the game", time: "3:55 PM", gcal: true, done: false }
+    - name: Fri
+      date: "15"
+      full_date: "2026-05-29"
+      overflow: 2
+      tasks:
+        - { text: "Study for exam", time: "10:00 AM", gcal: true, done: false }
+        - { text: "Call dentist", time: null, gcal: false, done: false }
+        - { text: "Buy groceries", time: null, gcal: false, done: false }
+        - { text: "Review PR", time: null, gcal: false, done: false }
+        - { text: "Deploy hotfix", time: null, gcal: false, done: false }
+        - { text: "Lunch with Adam", time: "1:00 PM", gcal: true, done: false }
+        - { text: "Team retro", time: "4:00 PM", gcal: true, done: false }
+        - { text: "Walk dog", time: null, gcal: false, done: false }
+    - name: Sat
+      date: "16"
+      full_date: "2026-05-30"
+      overflow: 0
+      tasks: []
+    - name: Sun
+      date: "17"
+      full_date: "2026-05-31"
+      overflow: 0
+      tasks:
+        - { text: "Family lunch", time: "12:00 PM", gcal: true, done: false }
