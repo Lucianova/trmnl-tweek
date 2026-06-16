@@ -46,6 +46,18 @@ export function formatTime(isoDate, timeFormat) {
   return `${h12}:${String(m).padStart(2, '0')} ${period}`
 }
 
+// Sort key within a day: all-day events first (0), then timed events by time-of-day
+// (1), then untimed to-dos (2). Tweek exposes no order field, so this is our ordering.
+// For recurring events isoDate's date is the series start — only the time is used.
+function dayOrder(t) {
+  if (t.gcal && !t.isoDate) return [0, 0]
+  if (t.gcal && t.isoDate) {
+    const [h, m] = t.isoDate.slice(11, 16).split(':').map(Number)
+    return [1, h * 60 + m]
+  }
+  return [2, 0]
+}
+
 export function groupTasksByDay(tasks, dateFrom, timeFormat) {
   const days = []
   const startMs = Date.parse(dateFrom + 'T00:00:00Z')
@@ -54,11 +66,21 @@ export function groupTasksByDay(tasks, dateFrom, timeFormat) {
     const d = new Date(dayMs)
     const fullDate = toISODate(d)
     const dayTasks = tasks
-      .filter(t => t.date === fullDate)
+      // Google Calendar events vary in shape: recurring events carry dtStart
+      // (no date), and some carry only isoDate. Fall back through all three.
+      .filter(t => (t.date || t.dtStart || (t.isoDate && t.isoDate.slice(0, 10))) === fullDate)
+      .sort((a, b) => {
+        const [ta, ma] = dayOrder(a)
+        const [tb, mb] = dayOrder(b)
+        return ta - tb || ma - mb
+      })
       .map(t => ({
         text: t.text,
-        time: t.gcal ? formatTime(t.isoDate, timeFormat) : null,
+        // All-day gcal events have isoDate: null — show title only, never crash.
+        time: t.gcal && t.isoDate ? formatTime(t.isoDate, timeFormat) : null,
         gcal: t.gcal,
+        // A gcal event with no time spans the whole day — flag it for an "(all-day)" label.
+        all_day: Boolean(t.gcal && !t.isoDate),
         done: t.done,
       }))
     days.push({

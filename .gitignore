@@ -12,3 +12,6 @@ node_modules/
 
 # trmnlp binary
 tweek/bin/
+
+# trmnlp build output
+tweek/_build/

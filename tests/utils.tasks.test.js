@@ -60,6 +60,7 @@ test('groupTasksByDay sets gcal time', () => {
   const wed = days.find(d => d.full_date === '2026-05-13')
   expect(wed.tasks[0]).toMatchInlineSnapshot(`
     {
+      "all_day": false,
       "done": false,
       "gcal": true,
       "text": "Dinner",
@@ -82,6 +83,72 @@ test('groupTasksByDay overflow cap at 8', () => {
   const mon = days[0]
   expect(mon.tasks).toHaveLength(8)
   expect(mon.overflow).toBe(2)
+})
+
+test('groupTasksByDay groups recurring gcal event by dtStart when date is absent', () => {
+  const tasks = [
+    { text: 'Running', dtStart: '2026-05-12', isoDate: '2026-05-12T20:00:00-03:00', gcal: true, done: false },
+  ]
+  const days = groupTasksByDay(tasks, '2026-05-11', '12h')
+  const tue = days.find(d => d.full_date === '2026-05-12')
+  expect(tue.tasks).toHaveLength(1)
+  expect(tue.tasks[0].text).toBe('Running')
+  expect(tue.tasks[0].time).toBe('8:00 PM')
+})
+
+test('groupTasksByDay groups gcal event by isoDate when only isoDate is present', () => {
+  const tasks = [
+    { text: 'Catch-up', isoDate: '2026-05-12T09:00:00-03:00', gcal: true, done: false },
+  ]
+  const days = groupTasksByDay(tasks, '2026-05-11', '12h')
+  const tue = days.find(d => d.full_date === '2026-05-12')
+  expect(tue.tasks).toHaveLength(1)
+  expect(tue.tasks[0].time).toBe('9:00 AM')
+})
+
+test('groupTasksByDay handles all-day gcal event with null isoDate', () => {
+  const tasks = [
+    { text: 'Hotel stay', date: '2026-05-12', isoDate: null, gcal: true, done: false },
+  ]
+  const days = groupTasksByDay(tasks, '2026-05-11', '12h')
+  const tue = days.find(d => d.full_date === '2026-05-12')
+  expect(tue.tasks).toHaveLength(1)
+  expect(tue.tasks[0].time).toBeNull()
+  expect(tue.tasks[0].all_day).toBe(true)
+})
+
+test('groupTasksByDay flags timed and native tasks as not all-day', () => {
+  const tasks = [
+    { text: 'Dinner', date: '2026-05-12', isoDate: '2026-05-12T20:00:00-03:00', gcal: true, done: false },
+    { text: 'Buy milk', date: '2026-05-12', gcal: false, done: false },
+  ]
+  const days = groupTasksByDay(tasks, '2026-05-11', '12h')
+  const tue = days.find(d => d.full_date === '2026-05-12')
+  expect(tue.tasks.map(t => t.all_day)).toEqual([false, false])
+})
+
+test('groupTasksByDay orders all-day events, then timed by time, then to-dos', () => {
+  const mixed = [
+    { text: 'Buy milk', date: '2026-05-12', gcal: false, done: false },
+    { text: 'English', date: '2026-05-12', isoDate: '2026-05-12T18:30:00-03:00', gcal: true, done: false },
+    { text: 'Hotel stay', date: '2026-05-12', isoDate: null, gcal: true, done: false },
+    { text: 'Calisthenics', date: '2026-05-12', isoDate: '2026-05-12T09:00:00-03:00', gcal: true, done: false },
+    { text: 'Walk dog', date: '2026-05-12', gcal: false, done: false },
+  ]
+  const days = groupTasksByDay(mixed, '2026-05-11', '24h')
+  const tue = days.find(d => d.full_date === '2026-05-12')
+  expect(tue.tasks.map(t => t.text)).toEqual(['Hotel stay', 'Calisthenics', 'English', 'Buy milk', 'Walk dog'])
+})
+
+test('groupTasksByDay sorts recurring gcal event by time-of-day, not isoDate series start', () => {
+  // Recurring event whose isoDate points at the original series start (March) but occurs today.
+  const tasks = [
+    { text: 'Late call', date: '2026-05-12', isoDate: '2026-05-12T20:00:00-03:00', gcal: true, done: false },
+    { text: 'English (recurring)', date: '2026-05-12', isoDate: '2026-03-10T08:00:00-03:00', gcal: true, done: false },
+  ]
+  const days = groupTasksByDay(tasks, '2026-05-11', '24h')
+  const tue = days.find(d => d.full_date === '2026-05-12')
+  expect(tue.tasks.map(t => t.text)).toEqual(['English (recurring)', 'Late call'])
 })
 
 // --- findCalendar ---

@@ -47,7 +47,12 @@ variables:
       date: "12"
       full_date: "2026-05-26"
       overflow: 0
+      # Ordered all-day → timed (by time) → to-dos, matching the transform's sort
       tasks:
+        # All-day Google event: API returns isoDate: null — flagged all_day, gets "(all-day)" label
+        - { text: "Hotel stay", time: null, gcal: true, all_day: true, done: false }
+        # Recurring Google event: API omits `date` (uses dtStart) — now grouped correctly
+        - { text: "English class (recurring)", time: "6:30 PM", gcal: true, done: false }
         - { text: "Watch a movie", time: "7:00 PM", gcal: true, done: false }
     - name: Wed
       date: "13"
