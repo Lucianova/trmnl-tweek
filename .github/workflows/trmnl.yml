@@ -2,7 +2,7 @@ name: TRMNL
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [master]
 
 jobs:
   lint:
@@ -13,11 +13,11 @@ jobs:
         with:
           ruby-version: "4.0"
       - run: gem install trmnl_preview
-      - run: trmnlp lint
+      - run: trmnlp lint -d tweek
 
   push:
     needs: lint
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -25,6 +25,6 @@ jobs:
         with:
           ruby-version: "4.0"
       - run: gem install trmnl_preview
-      - run: trmnlp push --force
+      - run: trmnlp push -d tweek --force
         env:
           TRMNL_API_KEY: ${{ secrets.TRMNL_API_KEY }}
