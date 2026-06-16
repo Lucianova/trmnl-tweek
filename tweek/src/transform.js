@@ -121,13 +121,13 @@ async function fetchTasks(idToken, calendarId, dateFrom, dateTo) {
 
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
-async function serverless(pluginSettings) {
+async function run(input) {
   const {
     refresh_token: refreshToken,
     calendar_name: calendarName = '',
     week_start_day: weekStartDay = 'Monday',
     time_format: timeFormat = '12h',
-  } = pluginSettings
+  } = input.trmnl.plugin_settings.custom_fields_values
 
   try {
     const idToken = await refreshIdToken(refreshToken)

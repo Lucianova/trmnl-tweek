@@ -1,3 +1,4 @@
+{% comment %}Custom fields consumed by serverless function: refresh_token, calendar_name, week_start_day, time_format{% endcomment %}
 {% assign today = trmnl.system.timestamp_utc | plus: trmnl.user.utc_offset | date: "%Y-%m-%d" %}
 
 <div class="layout layout--col layout--stretch">
@@ -8,37 +9,41 @@
   {% else %}
     <div class="grid grid--cols-7 gap--none" style="flex:1; overflow:hidden">
       {% for day in days %}
-        <div class="flex flex--col" style="{% unless forloop.last %}border-right:1px solid black;{% endunless %} overflow:hidden; min-width:0">
+        <div class="flex flex--col" style="{% unless forloop.last %}border-right:1px solid black;{% endunless %} overflow:hidden; min-width:0; align-items:stretch">
 
           {% comment %} Column header — inverted background for today {% endcomment %}
           {% if day.full_date == today %}
-            <div class="bg--black flex flex--row flex--center-x gap--xsmall py--1" style="border-bottom:1px solid black">
-              <span class="label label--xsmall label--inverted text--bold">{{ day.name }}</span>
-              <span class="label label--xsmall label--inverted">{{ day.date }}</span>
+            <div class="flex flex--center-x py--1" style="border-bottom:1px dashed black">
+              <span class=" label label--xsmall label--inverted rounded--full  px--3 py--0">{{ day.name }} {{ day.full_date | date: "%-m/%-d" }}</span>
             </div>
           {% else %}
-            <div class="flex flex--row flex--center-x gap--xsmall py--1" style="border-bottom:1px solid black">
+            <div class="flex flex--row flex--center-x gap--xsmall py--1" style="border-bottom:1px dashed black">
               <span class="label label--xsmall text--bold">{{ day.name }}</span>
-              <span class="label label--xsmall">{{ day.date }}</span>
+              <span class="label label--xsmall">{{ day.full_date | date: "%-m/%-d" }}</span>
             </div>
           {% endif %}
 
           {% comment %} Task list {% endcomment %}
-          <div class="flex flex--col px--1" style="flex:1; overflow:hidden; padding-top:3px; gap:2px">
+          <div class="flex flex--col px--1 pt--1" style="flex:1; overflow:hidden; gap:4px; align-items:stretch">
             {% for task in day.tasks %}
-              {% if task.done %}
-                <span class="label label--xsmall" style="text-decoration:line-through; word-break:break-word; display:block">
-                  {% if task.gcal %}<strong>{{ task.time }}</strong> {% endif %}{{ task.text }}
-                </span>
+              {% if task.gcal %}
+                <div style="padding:2px 4px; border-radius:4px; border:1px solid black; background:black">
+                  <span class="label label--xsmall label--inverted px--0 py--0" style="font-size:9px; word-break:break-word; display:block{% if task.done %}; text-decoration:line-through{% endif %}">
+                    <strong>{{ task.time }}</strong> {{ task.text }}
+                  </span>
+                </div>
               {% else %}
-                <span class="label label--xsmall" style="word-break:break-word; display:block">
-                  {% if task.gcal %}<strong>{{ task.time }}</strong> {% endif %}{{ task.text }}
-                </span>
+                <div style="padding:2px 4px; border-radius:4px; border:1px solid black">
+                  <span class="label label--xsmall" style="font-size:9px; word-break:break-word; display:block{% if task.done %}; text-decoration:line-through{% endif %}">{{ task.text }}</span>
+                </div>
               {% endif %}
             {% endfor %}
 
             {% if day.overflow > 0 %}
-              <span class="label label--xsmall label--gray" style="margin-top:auto">+{{ day.overflow }} more</span>
+              <div style="flex:1"></div>
+              <div class="flex flex--center-x">
+                <span class="label label--xsmall label--gray">+{{ day.overflow }} more</span>
+              </div>
             {% endif %}
           </div>
 
@@ -49,6 +54,6 @@
 </div>
 
 <div class="title_bar">
-  <img class="image" src="https://trmnl.com/images/plugins/trmnl--render.svg" />
+  <img class="image" src="https://cdn.prod.website-files.com/687e353eb827bf86e7f31a56/688247f0396335eab4923f31_twk-logo.png" />
   <span class="title">Tweek — {{ week_label }}</span>
 </div>
