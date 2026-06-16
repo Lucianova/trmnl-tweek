@@ -67,7 +67,7 @@ tweek/bin/
 
 - [ ] **Step 3: Install dependencies**
 
-Run from the project root (`/Users/luciano.casanova/Code/personal/trmnl-tweek`):
+Run from the project root (`~/trmnl-tweek`):
 
 ```bash
 npm install
@@ -732,7 +732,7 @@ custom_fields:
 variables:
   trmnl:
     user:
-      name: "Luciano Casanova"
+      name: "Johnathan Lewis"
       time_zone: "Buenos Aires"
       time_zone_iana: "America/Argentina/Buenos_Aires"
       utc_offset: -10800
