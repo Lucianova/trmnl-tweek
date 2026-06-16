@@ -1,4 +1,6 @@
-# Exploratory scripts with hardcoded credentials — do not commit
+# Local API-testing scripts with real credentials — never commit
+# (whole folder ignored so any new file dropped in is covered too)
+/tweek fetch examples/
 fetchTasks.ts
 refreshToken.ts
 requestIdToken.ts
