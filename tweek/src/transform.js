@@ -1,6 +1,4 @@
 // ─── Constants ────────────────────────────────────────────────────────────────
-const FIREBASE_API_KEY = 'AIzaSyC7_JO56peYl_eD9QODZlLwZpMclLUoC9s'
-const TOKEN_URL = `https://securetoken.googleapis.com/v1/token?key=${FIREBASE_API_KEY}`
 const CALENDARS_URL = 'https://tweek.so/api/v1/calendars'
 const TASKS_URL = 'https://tweek.so/api/v1/tasks'
 const MAX_TASKS_PER_DAY = 8
@@ -112,29 +110,20 @@ function findCalendar(calendars, calendarName) {
 
 // ─── HTTP helpers ──────────────────────────────────────────────────────────────
 
-async function refreshIdToken(refreshToken) {
-  const res = await fetch(TOKEN_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `grant_type=refresh_token&refresh_token=${encodeURIComponent(refreshToken)}`,
-  })
-  if (!res.ok) throw new Error(`Auth failed: ${res.status}`)
-  const data = await res.json()
-  return data.id_token
-}
-
-async function fetchCalendars(idToken) {
+async function fetchCalendars(apiKey) {
   const res = await fetch(CALENDARS_URL, {
-    headers: { Authorization: `Bearer ${idToken}`, 'Content-Type': 'application/json' },
+    headers: { 'X-API-Key': apiKey, 'Content-Type': 'application/json' },
   })
   if (!res.ok) throw new Error(`Calendars fetch failed: ${res.status}`)
   return res.json()
 }
 
-async function fetchTasks(idToken, calendarId, dateFrom, dateTo) {
-  const url = `${TASKS_URL}?calendarId=${calendarId}&dateFrom=${dateFrom}&dateTo=${dateTo}`
+async function fetchTasks(apiKey, calendarId, dateFrom, dateTo) {
+  // expand=occurrences makes Tweek expand recurring events server-side into
+  // per-day occurrences within the window — matching exactly what the app shows.
+  const url = `${TASKS_URL}?calendarId=${calendarId}&dateFrom=${dateFrom}&dateTo=${dateTo}&expand=occurrences`
   const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${idToken}`, 'Content-Type': 'application/json' },
+    headers: { 'X-API-Key': apiKey, 'Content-Type': 'application/json' },
   })
   if (!res.ok) throw new Error(`Tasks fetch failed: ${res.status}`)
   const body = await res.json()
@@ -145,18 +134,17 @@ async function fetchTasks(idToken, calendarId, dateFrom, dateTo) {
 
 async function run(input) {
   const {
-    refresh_token: refreshToken,
+    api_key: apiKey,
     calendar_name: calendarName = '',
     week_start_day: weekStartDay = 'Monday',
     time_format: timeFormat = '12h',
   } = input.trmnl.plugin_settings.custom_fields_values
 
   try {
-    const idToken = await refreshIdToken(refreshToken)
-    const calendars = await fetchCalendars(idToken)
+    const calendars = await fetchCalendars(apiKey)
     const calendarId = findCalendar(calendars, calendarName)
     const { dateFrom, dateTo, weekLabel } = getWeekDateRange(weekStartDay)
-    const rawTasks = await fetchTasks(idToken, calendarId, dateFrom, dateTo)
+    const rawTasks = await fetchTasks(apiKey, calendarId, dateFrom, dateTo)
     const days = groupTasksByDay(rawTasks, dateFrom, timeFormat)
 
     return { week_label: weekLabel, days, error: null }

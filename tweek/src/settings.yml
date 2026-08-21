@@ -11,12 +11,12 @@ polling_headers: ''
 polling_body: ''
 id: 305419
 custom_fields:
-- keyname: refresh_token
-  name: Refresh Token
+- keyname: api_key
+  name: API Key
   field_type: password
   required: true
-  placeholder: AMf-vBw...
-  instructions: 'Run the setup script to obtain this value. See plugin description for link. Update if you change your Tweek password.
+  placeholder: twk_...
+  instructions: 'Generate this in the Tweek app under Profile → API Settings. It does not expire.
 
     '
 - keyname: calendar_name
