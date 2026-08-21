@@ -15,19 +15,15 @@
 
 The plugin uses TRMNL's **polling + serverless** strategy. On each refresh, `tweek/src/transform.js` runs on TRMNL's infrastructure and:
 
-1. Exchanges your stored Firebase refresh token for a fresh ID token
-2. Resolves your calendar and fetches the current week's tasks from the Tweek API
+1. Authenticates to the Tweek API with your API key
+2. Resolves your calendar and fetches the current week's tasks, letting Tweek expand recurring events into per-day occurrences (`expand=occurrences`)
 3. Returns merge variables that the Liquid templates render into the week grid
 
 ## Setup
 
-1. **Get your Tweek refresh token** — run the helper script once:
-   ```bash
-   ./scripts/get-refresh-token.sh your@email.com yourpassword
-   ```
-   Copy the token it prints.
+1. **Get your Tweek API key** — in the Tweek app, go to **Profile → API Settings** and generate a key (starts with `twk_`). It does not expire.
 2. **Add the plugin in TRMNL** and fill in the fields:
-   - **Refresh Token** — the value from step 1
+   - **API Key** — the value from step 1
    - **Calendar Name** — leave blank to use your default calendar
    - **Week Start Day** — Monday or Sunday
    - **Time Format** — 12h or 24h
@@ -45,5 +41,5 @@ Pure date/task utilities live in `src/utils.js` and are mirrored into `tweek/src
 
 ## Notes
 
-- The Firebase API key in `transform.js` is Tweek's public web client key, not a secret.
+- Your Tweek API key is stored as a password field in the plugin settings and sent only to the Tweek API.
 - Unofficial personal project; not affiliated with Tweek or TRMNL.
