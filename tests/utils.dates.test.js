@@ -33,6 +33,21 @@ test('week starting Sunday, queried on Sunday', () => {
   expect(result.dateTo).toBe('2026-05-16')
 })
 
+test('week start day is case-insensitive', () => {
+  const result = getWeekDateRange('sunday', WED_MAY_13)
+  expect(result.dateFrom).toBe('2026-05-10')
+  expect(result.dateTo).toBe('2026-05-16')
+})
+
+test('week window uses the user utc offset, not UTC', () => {
+  // Monday 2026-05-11 01:00 UTC is still Sunday 22:00 in UTC-3, so for that
+  // user a Monday-start week is the prior week, not the one starting May 11.
+  const monMay11_0100Utc = MON_MAY_11 + 3600000
+  const result = getWeekDateRange('Monday', monMay11_0100Utc, -10800)
+  expect(result.dateFrom).toBe('2026-05-04')
+  expect(result.dateTo).toBe('2026-05-10')
+})
+
 test('week label same month', () => {
   const result = getWeekDateRange('Monday', WED_MAY_13)
   expect(result.weekLabel).toBe('May 11–17')

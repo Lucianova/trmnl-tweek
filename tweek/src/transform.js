@@ -22,12 +22,15 @@ function formatWeekLabel(start, end) {
   return sm === em ? `${sm} ${sd}–${ed}` : `${sm} ${sd} – ${em} ${ed}`
 }
 
-function getWeekDateRange(weekStartDay, nowMs = Date.now()) {
-  const startDayNum = weekStartDay === 'Sunday' ? 0 : 1
-  const d = new Date(nowMs)
+function getWeekDateRange(weekStartDay, nowMs = Date.now(), utcOffsetSeconds = 0) {
+  const startDayNum = String(weekStartDay).toLowerCase() === 'sunday' ? 0 : 1
+  // Shift to the user's local wall-clock before deriving the week, so installers
+  // in any timezone get the same week (and "today") they see in the Tweek app.
+  const localNow = nowMs + utcOffsetSeconds * 1000
+  const d = new Date(localNow)
   const currentDay = d.getUTCDay()
   const daysBack = (currentDay - startDayNum + 7) % 7
-  const startMs = nowMs - daysBack * 86400000
+  const startMs = localNow - daysBack * 86400000
   const endMs = startMs + 6 * 86400000
   const startDate = new Date(startMs)
   const endDate = new Date(endMs)
@@ -102,6 +105,7 @@ function findCalendar(calendars, calendarName) {
   if (calendarName) {
     const match = calendars.find(c => c.name.toLowerCase() === calendarName.toLowerCase())
     if (match) return match.id
+    throw new Error(`Calendar "${calendarName}" not found`)
   }
   const defaultCal = calendars.find(c => c.isDefault)
   if (!defaultCal) throw new Error('No calendar found')
@@ -132,23 +136,31 @@ async function fetchTasks(apiKey, calendarId, dateFrom, dateTo) {
 
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
-async function run(input) {
-  const {
-    api_key: apiKey,
-    calendar_name: calendarName = '',
-    week_start_day: weekStartDay = 'Monday',
-    time_format: timeFormat = '12h',
-  } = input.trmnl.plugin_settings.custom_fields_values
+// Map raw fetch/lookup errors to a short, actionable line for the e-ink screen.
+function friendlyError(message) {
+  if (/\b40[13]\b/.test(message)) return 'Check your Tweek API key in the plugin settings.'
+  if (message.startsWith('Calendar ')) return `${message}. Check the Calendar Name setting.`
+  return "Couldn't reach Tweek. It will retry on the next refresh."
+}
 
+async function run(input) {
   try {
+    const {
+      api_key: apiKey,
+      calendar_name: calendarName = '',
+      week_start_day: weekStartDay = 'Monday',
+      time_format: timeFormat = '12h',
+    } = input.trmnl.plugin_settings.custom_fields_values
+    const utcOffsetSeconds = input.trmnl.user && input.trmnl.user.utc_offset || 0
+
     const calendars = await fetchCalendars(apiKey)
     const calendarId = findCalendar(calendars, calendarName)
-    const { dateFrom, dateTo, weekLabel } = getWeekDateRange(weekStartDay)
+    const { dateFrom, dateTo, weekLabel } = getWeekDateRange(weekStartDay, Date.now(), utcOffsetSeconds)
     const rawTasks = await fetchTasks(apiKey, calendarId, dateFrom, dateTo)
     const days = groupTasksByDay(rawTasks, dateFrom, timeFormat)
 
     return { week_label: weekLabel, days, error: null }
   } catch (err) {
-    return { week_label: '', days: [], error: err.message }
+    return { week_label: '', days: [], error: friendlyError(err.message) }
   }
 }

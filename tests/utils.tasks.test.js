@@ -167,11 +167,11 @@ test('findCalendar falls back to isDefault when no name given', () => {
   expect(findCalendar(CALENDARS, '')).toBe('def')
 })
 
-test('findCalendar falls back to isDefault when name does not match', () => {
-  expect(findCalendar(CALENDARS, 'nonexistent')).toBe('def')
+test('findCalendar throws when a given name does not match', () => {
+  expect(() => findCalendar(CALENDARS, 'nonexistent')).toThrow('Calendar "nonexistent" not found')
 })
 
-test('findCalendar throws when no match and no default', () => {
+test('findCalendar throws when no name given and no default', () => {
   const noDefault = [{ id: 'abc', name: 'Personal', isDefault: false }]
-  expect(() => findCalendar(noDefault, 'missing')).toThrow('No calendar found')
+  expect(() => findCalendar(noDefault, '')).toThrow('No calendar found')
 })

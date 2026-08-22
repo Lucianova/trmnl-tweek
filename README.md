@@ -7,7 +7,7 @@
 ## Features
 
 - 📅 7-column week view of your Tweek tasks and events
-- 🧩 Supports all four TRMNL layouts: full, half horizontal, half vertical, and quadrant
+- 🖥️ Designed for the **full** layout (half and quadrant show a "best viewed at full size" notice)
 - 🔄 Self-contained — a serverless function fetches and shapes the data on every poll (refreshes every 30 min)
 - ⚙️ Configurable calendar, week start day (Mon/Sun), and 12h/24h time format
 
@@ -43,3 +43,7 @@ Pure date/task utilities live in `src/utils.js` and are mirrored into `tweek/src
 
 - Your Tweek API key is stored as a password field in the plugin settings and sent only to the Tweek API.
 - Unofficial personal project; not affiliated with Tweek or TRMNL.
+
+## License
+
+[MIT](LICENSE)
