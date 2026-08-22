@@ -11,7 +11,7 @@ transform_runtime: disabled
 
 # Test values for custom form fields (used during local development only)
 custom_fields:
-  refresh_token: "your_refresh_token_here"
+  api_key: "twk_your_api_key_here"
   calendar_name: "My calendar"
   week_start_day: "Monday"
   time_format: "12h"

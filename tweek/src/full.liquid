@@ -1,10 +1,13 @@
-{% comment %}Custom fields consumed by serverless function: refresh_token, calendar_name, week_start_day, time_format{% endcomment %}
+{% comment %}Custom fields consumed by serverless function: api_key, calendar_name, week_start_day, time_format{% endcomment %}
 {% assign today = trmnl.system.timestamp_utc | plus: trmnl.user.utc_offset | date: "%Y-%m-%d" %}
 
 <div class="layout layout--col layout--stretch">
   {% if error %}
     <div class="layout layout--center h--full">
-      <span class="title title--small">Unable to load tasks</span>
+      <div class="flex flex--col flex--center-x gap--xsmall">
+        <span class="title title--small">Couldn't load your week</span>
+        <span class="label label--small label--gray">{{ error }}</span>
+      </div>
     </div>
   {% else %}
     <div class="grid grid--cols-7 gap--none" style="flex:1; overflow:hidden">

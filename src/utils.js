@@ -16,12 +16,15 @@ function formatWeekLabel(start, end) {
   return sm === em ? `${sm} ${sd}–${ed}` : `${sm} ${sd} – ${em} ${ed}`
 }
 
-export function getWeekDateRange(weekStartDay, nowMs = Date.now()) {
-  const startDayNum = weekStartDay === 'Sunday' ? 0 : 1
-  const d = new Date(nowMs)
+export function getWeekDateRange(weekStartDay, nowMs = Date.now(), utcOffsetSeconds = 0) {
+  const startDayNum = String(weekStartDay).toLowerCase() === 'sunday' ? 0 : 1
+  // Shift to the user's local wall-clock before deriving the week, so installers
+  // in any timezone get the same week (and "today") they see in the Tweek app.
+  const localNow = nowMs + utcOffsetSeconds * 1000
+  const d = new Date(localNow)
   const currentDay = d.getUTCDay()
   const daysBack = (currentDay - startDayNum + 7) % 7
-  const startMs = nowMs - daysBack * 86400000
+  const startMs = localNow - daysBack * 86400000
   const endMs = startMs + 6 * 86400000
   const startDate = new Date(startMs)
   const endDate = new Date(endMs)
@@ -98,6 +101,7 @@ export function findCalendar(calendars, calendarName) {
   if (calendarName) {
     const match = calendars.find(c => c.name.toLowerCase() === calendarName.toLowerCase())
     if (match) return match.id
+    throw new Error(`Calendar "${calendarName}" not found`)
   }
   const defaultCal = calendars.find(c => c.isDefault)
   if (!defaultCal) throw new Error('No calendar found')
