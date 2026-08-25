@@ -1,4 +1,4 @@
-import { formatTime, groupTasksByDay, findCalendar } from '../src/utils.js'
+import { formatTime, groupTasksByDay } from '../src/utils.js'
 
 // --- formatTime ---
 
@@ -149,29 +149,4 @@ test('groupTasksByDay sorts recurring gcal event by time-of-day, not isoDate ser
   const days = groupTasksByDay(tasks, '2026-05-11', '24h')
   const tue = days.find(d => d.full_date === '2026-05-12')
   expect(tue.tasks.map(t => t.text)).toEqual(['English (recurring)', 'Late call'])
-})
-
-// --- findCalendar ---
-
-const CALENDARS = [
-  { id: 'abc', name: 'Personal', isDefault: false },
-  { id: 'def', name: 'My calendar', isDefault: true },
-  { id: 'ghi', name: 'Work', isDefault: false },
-]
-
-test('findCalendar by name (case-insensitive)', () => {
-  expect(findCalendar(CALENDARS, 'work')).toBe('ghi')
-})
-
-test('findCalendar falls back to isDefault when no name given', () => {
-  expect(findCalendar(CALENDARS, '')).toBe('def')
-})
-
-test('findCalendar throws when a given name does not match', () => {
-  expect(() => findCalendar(CALENDARS, 'nonexistent')).toThrow('Calendar "nonexistent" not found')
-})
-
-test('findCalendar throws when no name given and no default', () => {
-  const noDefault = [{ id: 'abc', name: 'Personal', isDefault: false }]
-  expect(() => findCalendar(noDefault, '')).toThrow('No calendar found')
 })

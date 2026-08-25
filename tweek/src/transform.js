@@ -1,6 +1,6 @@
 // ─── Constants ────────────────────────────────────────────────────────────────
-const CALENDARS_URL = 'https://tweek.so/api/v1/calendars'
 const TASKS_URL = 'https://tweek.so/api/v1/tasks'
+const REQUEST_TIMEOUT_MS = 4000
 const MAX_TASKS_PER_DAY = 8
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -101,34 +101,28 @@ function groupTasksByDay(tasks, dateFrom, timeFormat) {
   return days
 }
 
-function findCalendar(calendars, calendarName) {
-  if (calendarName) {
-    const match = calendars.find(c => c.name.toLowerCase() === calendarName.toLowerCase())
-    if (match) return match.id
-    throw new Error(`Calendar "${calendarName}" not found`)
-  }
-  const defaultCal = calendars.find(c => c.isDefault)
-  if (!defaultCal) throw new Error('No calendar found')
-  return defaultCal.id
-}
-
 // ─── HTTP helpers ──────────────────────────────────────────────────────────────
-
-async function fetchCalendars(apiKey) {
-  const res = await fetch(CALENDARS_URL, {
-    headers: { 'X-API-Key': apiKey, 'Content-Type': 'application/json' },
-  })
-  if (!res.ok) throw new Error(`Calendars fetch failed: ${res.status}`)
-  return res.json()
-}
 
 async function fetchTasks(apiKey, calendarId, dateFrom, dateTo) {
   // expand=occurrences makes Tweek expand recurring events server-side into
   // per-day occurrences within the window — matching exactly what the app shows.
   const url = `${TASKS_URL}?calendarId=${calendarId}&dateFrom=${dateFrom}&dateTo=${dateTo}&expand=occurrences`
-  const res = await fetch(url, {
-    headers: { 'X-API-Key': apiKey, 'Content-Type': 'application/json' },
-  })
+  // Abort a slow request before TRMNL's hard 5s kill, so we can surface a
+  // friendly "retry" message instead of an opaque platform timeout.
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+  let res
+  try {
+    res = await fetch(url, {
+      headers: { 'X-API-Key': apiKey, 'Content-Type': 'application/json' },
+      signal: controller.signal,
+    })
+  } catch (err) {
+    if (err.name === 'AbortError') throw new Error('TIMEOUT')
+    throw err
+  } finally {
+    clearTimeout(timer)
+  }
   if (!res.ok) throw new Error(`Tasks fetch failed: ${res.status}`)
   const body = await res.json()
   return body.data
@@ -136,10 +130,12 @@ async function fetchTasks(apiKey, calendarId, dateFrom, dateTo) {
 
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
-// Map raw fetch/lookup errors to a short, actionable line for the e-ink screen.
+// Map raw fetch/validation errors to a short, actionable line for the e-ink screen.
 function friendlyError(message) {
+  if (message === 'MISSING_CALENDAR_ID') return 'Add your Tweek Calendar ID in the plugin settings.'
+  if (message === 'TIMEOUT') return 'Tweek is slow right now — it will retry on the next refresh.'
+  if (/\b404\b/.test(message)) return 'Calendar not found — check your Calendar ID in the plugin settings.'
   if (/\b40[13]\b/.test(message)) return 'Check your Tweek API key in the plugin settings.'
-  if (message.startsWith('Calendar ')) return `${message}. Check the Calendar Name setting.`
   return "Couldn't reach Tweek. It will retry on the next refresh."
 }
 
@@ -147,16 +143,17 @@ async function run(input) {
   try {
     const {
       api_key: apiKey,
-      calendar_name: calendarName = '',
+      calendar_id: calendarId = '',
       week_start_day: weekStartDay = 'Monday',
       time_format: timeFormat = '12h',
     } = input.trmnl.plugin_settings.custom_fields_values
     const utcOffsetSeconds = input.trmnl.user && input.trmnl.user.utc_offset || 0
 
-    const calendars = await fetchCalendars(apiKey)
-    const calendarId = findCalendar(calendars, calendarName)
+    // Validate before fetching: an empty calendarId makes Tweek return a 500.
+    if (!calendarId || !calendarId.trim()) throw new Error('MISSING_CALENDAR_ID')
+
     const { dateFrom, dateTo, weekLabel } = getWeekDateRange(weekStartDay, Date.now(), utcOffsetSeconds)
-    const rawTasks = await fetchTasks(apiKey, calendarId, dateFrom, dateTo)
+    const rawTasks = await fetchTasks(apiKey, calendarId.trim(), dateFrom, dateTo)
     const days = groupTasksByDay(rawTasks, dateFrom, timeFormat)
 
     return { week_label: weekLabel, days, error: null }
