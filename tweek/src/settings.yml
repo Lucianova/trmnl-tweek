@@ -19,12 +19,14 @@ custom_fields:
   instructions: 'Generate this in the Tweek app under Profile → API Settings. It does not expire.
 
     '
-- keyname: calendar_name
-  name: Calendar Name
+- keyname: calendar_id
+  name: Calendar ID
   field_type: text
-  required: false
-  placeholder: My calendar
-  instructions: Leave blank to use your default calendar.
+  required: true
+  placeholder: NLqBdgl83RaMLDJdR5fU
+  instructions: 'Find it by calling GET https://tweek.so/api/v1/calendars with your API key (see the plugin README) and copying the "id" of the calendar you want.
+
+    '
 - keyname: week_start_day
   name: Week Start Day
   field_type: select

@@ -96,14 +96,3 @@ export function groupTasksByDay(tasks, dateFrom, timeFormat) {
   }
   return days
 }
-
-export function findCalendar(calendars, calendarName) {
-  if (calendarName) {
-    const match = calendars.find(c => c.name.toLowerCase() === calendarName.toLowerCase())
-    if (match) return match.id
-    throw new Error(`Calendar "${calendarName}" not found`)
-  }
-  const defaultCal = calendars.find(c => c.isDefault)
-  if (!defaultCal) throw new Error('No calendar found')
-  return defaultCal.id
-}

@@ -1,4 +1,4 @@
-{% comment %}Custom fields consumed by serverless function: api_key, calendar_name, week_start_day, time_format{% endcomment %}
+{% comment %}Custom fields consumed by serverless function: api_key, calendar_id, week_start_day, time_format{% endcomment %}
 {% assign today = trmnl.system.timestamp_utc | plus: trmnl.user.utc_offset | date: "%Y-%m-%d" %}
 
 <div class="layout layout--col layout--stretch">

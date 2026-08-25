@@ -9,22 +9,26 @@
 - 📅 7-column week view of your Tweek tasks and events
 - 🖥️ Designed for the **full** layout (half and quadrant show a "best viewed at full size" notice)
 - 🔄 Self-contained — a serverless function fetches and shapes the data on every poll (refreshes every 30 min)
-- ⚙️ Configurable calendar, week start day (Mon/Sun), and 12h/24h time format
+- ⚙️ Configurable calendar (by ID), week start day (Mon/Sun), and 12h/24h time format
 
 ## How it works
 
 The plugin uses TRMNL's **polling + serverless** strategy. On each refresh, `tweek/src/transform.js` runs on TRMNL's infrastructure and:
 
 1. Authenticates to the Tweek API with your API key
-2. Resolves your calendar and fetches the current week's tasks, letting Tweek expand recurring events into per-day occurrences (`expand=occurrences`)
+2. Fetches the current week's tasks for your Calendar ID in a single request, letting Tweek expand recurring events into per-day occurrences (`expand=occurrences`)
 3. Returns merge variables that the Liquid templates render into the week grid
 
 ## Setup
 
 1. **Get your Tweek API key** — in the Tweek app, go to **Profile → API Settings** and generate a key (starts with `twk_`). It does not expire.
-2. **Add the plugin in TRMNL** and fill in the fields:
+2. **Get your Calendar ID** — list your calendars and copy the `id` of the one you want:
+   ```bash
+   curl -H "X-API-Key: twk_..." https://tweek.so/api/v1/calendars
+   ```
+3. **Add the plugin in TRMNL** and fill in the fields:
    - **API Key** — the value from step 1
-   - **Calendar Name** — leave blank to use your default calendar
+   - **Calendar ID** — the `id` from step 2
    - **Week Start Day** — Monday or Sunday
    - **Time Format** — 12h or 24h
 
