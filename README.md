@@ -8,7 +8,7 @@
 ## Features
 
 - 📅 7-column week view of your Tweek tasks and events
-- 🖥️ Designed for the **full** layout (half and quadrant show a "best viewed at full size" notice)
+- 🖥️ Designed for the **full landscape** layout (half and quadrant show a "best viewed at full size" notice)
 - 🔄 Self-contained — a serverless function fetches and shapes the data on every poll (refreshes every 30 min)
 - ⚙️ Configurable calendar (by ID), week start day (Mon/Sun), and 12h/24h time format
 
