@@ -2,6 +2,7 @@
   <img src="tweek-logo.png" alt="Tweek logo" width="120" />
   <h1>Tweek for TRMNL</h1>
   <p>A TRMNL e-ink plugin that shows your <a href="https://tweek.so">Tweek</a> calendar as a 7-day week grid.</p>
+  <img src="preview.png" alt="Tweek for TRMNL — 7-day week view" width="640" />
 </div>
 
 ## Features

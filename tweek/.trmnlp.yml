@@ -28,66 +28,70 @@ variables:
       height: 480
       width: 800
     system:
-      timestamp_utc: 1779848000
+      timestamp_utc: 1787918400
     plugin_settings:
       instance_name: "Tweek"
       strategy: "polling"
       dark_mode: "no"
-  week_label: "May 25–31"
+  week_label: "Aug 24–30"
   error: null
+  # Sample week for local preview. Tasks are pre-ordered the way the transform
+  # sorts them (all-day → timed by time → to-dos) since full.liquid renders as-is.
   days:
     - name: Mon
-      date: "11"
-      full_date: "2026-05-25"
+      date: "24"
+      full_date: "2026-08-24"
       overflow: 0
       tasks:
-        - { text: "Morning standup", time: "9:00 AM", gcal: true, done: false }
-        - { text: "Write unit tests", time: null, gcal: false, done: true }
+        - { text: "Team standup", time: "9:00 AM", gcal: true, done: false }
+        - { text: "Submit expense report", time: null, gcal: false, done: true }
     - name: Tue
-      date: "12"
-      full_date: "2026-05-26"
+      date: "25"
+      full_date: "2026-08-25"
       overflow: 0
-      # Ordered all-day → timed (by time) → to-dos, matching the transform's sort
       tasks:
         # All-day Google event: API returns isoDate: null — flagged all_day, gets "(all-day)" label
-        - { text: "Hotel stay", time: null, gcal: true, all_day: true, done: false }
-        # Recurring Google event: API omits `date` (uses dtStart) — now grouped correctly
-        - { text: "English class (recurring)", time: "6:30 PM", gcal: true, done: false }
-        - { text: "Watch a movie", time: "7:00 PM", gcal: true, done: false }
+        - { text: "Design conference", time: null, gcal: true, all_day: true, done: false }
+        # Recurring Google event
+        - { text: "Yoga class (recurring)", time: "7:00 AM", gcal: true, done: false }
+        - { text: "Lunch with Sam", time: "12:30 PM", gcal: true, done: false }
     - name: Wed
-      date: "13"
-      full_date: "2026-05-27"
+      date: "26"
+      full_date: "2026-08-26"
       overflow: 0
       tasks:
-        - { text: "TRMNL Plugin", time: null, gcal: false, done: false }
-        - { text: "Morning standup", time: "9:00 AM", gcal: true, done: false } 
+        - { text: "Design review", time: "11:00 AM", gcal: true, done: false }
+        - { text: "Water the plants", time: null, gcal: false, done: false }
     - name: Thu
-      date: "14"
-      full_date: "2026-05-28"
+      date: "27"
+      full_date: "2026-08-27"
       overflow: 0
       tasks:
-        - { text: "Get tickets for the game", time: "3:55 PM", gcal: true, done: false }
+        - { text: "1:1 with manager", time: "3:00 PM", gcal: true, done: false }
+        - { text: "Renew passport", time: null, gcal: false, done: false }
     - name: Fri
-      date: "15"
-      full_date: "2026-05-29"
+      date: "28"
+      full_date: "2026-08-28"
       overflow: 2
       tasks:
-        - { text: "Study for exam", time: "10:00 AM", gcal: true, done: false }
-        - { text: "Call dentist", time: null, gcal: false, done: false }
-        - { text: "Buy groceries", time: null, gcal: false, done: false }
-        - { text: "Review PR", time: null, gcal: false, done: false }
-        - { text: "Deploy hotfix", time: null, gcal: false, done: false }
-        - { text: "Lunch with Adam", time: "1:00 PM", gcal: true, done: false }
+        - { text: "Team standup", time: "9:00 AM", gcal: true, done: false }
         - { text: "Team retro", time: "4:00 PM", gcal: true, done: false }
-        - { text: "Walk dog", time: null, gcal: false, done: false }
+        - { text: "Gym", time: "6:00 PM", gcal: true, done: false }
+        - { text: "Ship release", time: null, gcal: false, done: false }
+        - { text: "Reply to emails", time: null, gcal: false, done: true }
+        - { text: "Grocery run", time: null, gcal: false, done: false }
+        - { text: "Book flights", time: null, gcal: false, done: false }
+        - { text: "Pick up package", time: null, gcal: false, done: false }
     - name: Sat
-      date: "16"
-      full_date: "2026-05-30"
-      overflow: 0
-      tasks: []
-    - name: Sun
-      date: "17"
-      full_date: "2026-05-31"
+      date: "29"
+      full_date: "2026-08-29"
       overflow: 0
       tasks:
-        - { text: "Family lunch", time: "12:00 PM", gcal: true, done: false }
+        - { text: "Farmers market", time: "10:00 AM", gcal: true, done: false }
+    - name: Sun
+      date: "30"
+      full_date: "2026-08-30"
+      overflow: 0
+      tasks:
+        - { text: "Family brunch", time: "11:00 AM", gcal: true, done: false }
+        - { text: "Meal prep", time: null, gcal: false, done: false }

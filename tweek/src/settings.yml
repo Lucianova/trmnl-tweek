@@ -23,7 +23,7 @@ custom_fields:
   name: Calendar ID
   field_type: text
   required: true
-  placeholder: NLqBdgl83RaMLDJdR5fU
+  placeholder: aB3xK9mQ2pL7rT5vN1wZ
   instructions: 'In the Tweek app, open Calendar settings and copy the Calendar ID shown at the bottom. (Advanced: GET https://tweek.so/api/v1/calendars with your API key also returns it.)
 
     '

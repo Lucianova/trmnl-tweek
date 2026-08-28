@@ -150,3 +150,12 @@ test('groupTasksByDay sorts recurring gcal event by time-of-day, not isoDate ser
   const tue = days.find(d => d.full_date === '2026-05-12')
   expect(tue.tasks.map(t => t.text)).toEqual(['English (recurring)', 'Late call'])
 })
+
+test('groupTasksByDay carries the done flag through (drives the strikethrough)', () => {
+  const tasks = [
+    { text: 'Finished', date: '2026-05-11', gcal: false, done: true },
+    { text: 'Pending', date: '2026-05-11', gcal: false, done: false },
+  ]
+  const mon = groupTasksByDay(tasks, '2026-05-11', '24h').find(d => d.full_date === '2026-05-11')
+  expect(mon.tasks.map(t => t.done)).toEqual([true, false])
+})
