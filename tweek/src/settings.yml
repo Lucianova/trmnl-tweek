@@ -24,7 +24,7 @@ custom_fields:
   field_type: text
   required: true
   placeholder: NLqBdgl83RaMLDJdR5fU
-  instructions: 'Find it by calling GET https://tweek.so/api/v1/calendars with your API key (see the plugin README) and copying the "id" of the calendar you want.
+  instructions: 'In the Tweek app, open Calendar settings and copy the Calendar ID shown at the bottom. (Advanced: GET https://tweek.so/api/v1/calendars with your API key also returns it.)
 
     '
 - keyname: week_start_day
