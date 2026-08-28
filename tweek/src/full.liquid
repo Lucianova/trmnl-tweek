@@ -6,7 +6,7 @@
     <div class="layout layout--center h--full">
       <div class="flex flex--col flex--center-x gap--xsmall">
         <span class="title title--small">Couldn't load your week</span>
-        <span class="label label--small label--gray">{{ error }}</span>
+        <span class="label label--small label--gray 1bit:text--black">{{ error }}</span>
       </div>
     </div>
   {% else %}
@@ -14,10 +14,10 @@
       {% for day in days %}
         <div class="flex flex--col" style="{% unless forloop.last %}border-right:1px solid black;{% endunless %} overflow:hidden; min-width:0; align-items:stretch">
 
-          {% comment %} Column header — inverted background for today {% endcomment %}
+          {% comment %} Column header — inverted pill for today {% endcomment %}
           {% if day.full_date == today %}
             <div class="flex flex--center-x py--1" style="border-bottom:1px dashed black">
-              <span class=" label label--xsmall label--inverted rounded--full  px--3 py--0">{{ day.name }} {{ day.full_date | date: "%-m/%-d" }}</span>
+              <span class="label label--xsmall label--inverted rounded--full px--3 py--0">{{ day.name }} {{ day.full_date | date: "%-m/%-d" }}</span>
             </div>
           {% else %}
             <div class="flex flex--row flex--center-x gap--xsmall py--1" style="border-bottom:1px dashed black">
@@ -27,25 +27,24 @@
           {% endif %}
 
           {% comment %} Task list {% endcomment %}
-          <div class="flex flex--col px--1 pt--1" style="flex:1; overflow:hidden; gap:4px; align-items:stretch">
+          <div class="flex flex--col px--1 pt--1 gap--[4px]" style="flex:1; overflow:hidden; align-items:stretch">
             {% for task in day.tasks %}
               {% if task.gcal %}
-                <div style="padding:2px 4px; border-radius:4px; border:1px solid black; background:black">
+                <div class="bg--black rounded--small p--1">
                   <span class="label label--xsmall label--inverted px--0 py--0" style="font-size:9px; word-break:break-word; display:block{% if task.done %}; text-decoration:line-through{% endif %}">
                     {% if task.time %}<strong>{{ task.time }}</strong> {% endif %}{{ task.text }}{% if task.all_day %} (all-day){% endif %}
                   </span>
                 </div>
               {% else %}
-                <div style="padding:2px 4px; border-radius:4px; border:1px solid black">
+                <div class="rounded--small p--1" style="border:1px solid black">
                   <span class="label label--xsmall" style="font-size:9px; word-break:break-word; display:block{% if task.done %}; text-decoration:line-through{% endif %}">{{ task.text }}</span>
                 </div>
               {% endif %}
             {% endfor %}
 
             {% if day.overflow > 0 %}
-              <div style="flex:1"></div>
-              <div class="flex flex--center-x">
-                <span class="label label--xsmall label--gray">+{{ day.overflow }} more</span>
+              <div class="flex flex--center-x mt--auto">
+                <span class="label label--xsmall label--gray 1bit:text--black">+{{ day.overflow }} more</span>
               </div>
             {% endif %}
           </div>
