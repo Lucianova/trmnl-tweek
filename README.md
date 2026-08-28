@@ -22,7 +22,8 @@ The plugin uses TRMNL's **polling + serverless** strategy. On each refresh, `twe
 ## Setup
 
 1. **Get your Tweek API key** — in the Tweek app, go to **Profile → API Settings** and generate a key (starts with `twk_`). It does not expire.
-2. **Get your Calendar ID** — list your calendars and copy the `id` of the one you want:
+2. **Get your Calendar ID** — in the Tweek app, open **Calendar settings** and copy the **Calendar ID** shown at the bottom (tap the copy icon).
+   Power users can instead list calendars via the API and copy the `id`:
    ```bash
    curl -H "X-API-Key: twk_..." https://tweek.so/api/v1/calendars
    ```
