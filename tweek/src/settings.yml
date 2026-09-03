@@ -43,5 +43,15 @@ custom_fields:
   options:
   - 12h
   - 24h
+- keyname: plugin_info
+  name: Tweek for TRMNL
+  field_type: author_bio
+  category: productivity,calendar
+  github_url: https://github.com/Lucianova/trmnl-tweek
+  learn_more_url: https://tweek.so
+  email_address: lucianova.1992@gmail.com
+  description: 'Shows your Tweek calendar as a 7-day week grid on your e-ink display, mirroring your Tweek web app — Google Calendar events included. Configure it with your Tweek API key and Calendar ID. Open source; issues and PRs welcome at the GitHub link. Unofficial; not affiliated with Tweek or TRMNL.
+
+    '
 name: Tweek
 refresh_interval: 30
