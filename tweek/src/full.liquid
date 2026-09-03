@@ -10,9 +10,9 @@
       </div>
     </div>
   {% else %}
-    <div class="grid grid--cols-7 gap--none" style="flex:1; overflow:hidden">
+    <div class="grid grid--cols-7 gap--none grow" style="overflow:hidden">
       {% for day in days %}
-        <div class="flex flex--col" style="{% unless forloop.last %}border-right:1px solid black;{% endunless %} overflow:hidden; min-width:0; align-items:stretch">
+        <div class="flex flex--col flex--stretch" style="{% unless forloop.last %}border-right:1px solid black;{% endunless %} overflow:hidden; min-width:0">
 
           {% comment %} Column header — inverted pill for today {% endcomment %}
           {% if day.full_date == today %}
@@ -27,17 +27,17 @@
           {% endif %}
 
           {% comment %} Task list {% endcomment %}
-          <div class="flex flex--col px--1 pt--1 gap--[4px]" style="flex:1; overflow:hidden; align-items:stretch">
+          <div class="flex flex--col flex--stretch px--1 pt--1 gap--[4px] grow" style="overflow:hidden">
             {% for task in day.tasks %}
               {% if task.gcal %}
                 <div class="bg--black rounded--small p--1">
-                  <span class="label label--xsmall label--inverted px--0 py--0" style="font-size:9px; word-break:break-word; display:block{% if task.done %}; text-decoration:line-through{% endif %}">
-                    {% if task.time %}<strong>{{ task.time }}</strong> {% endif %}{{ task.text }}{% if task.all_day %} (all-day){% endif %}
+                  <span class="label label--xsmall label--inverted px--0 py--0" style="font-size:9px; word-break:break-word; display:block">
+                    {% if task.time %}<strong>{{ task.time }}</strong> {% endif %}{% if task.done %}<s>{{ task.text }}</s>{% else %}{{ task.text }}{% endif %}{% if task.all_day %} (all-day){% endif %}
                   </span>
                 </div>
               {% else %}
                 <div class="rounded--small p--1" style="border:1px solid black">
-                  <span class="label label--xsmall" style="font-size:9px; word-break:break-word; display:block{% if task.done %}; text-decoration:line-through{% endif %}">{{ task.text }}</span>
+                  <span class="label label--xsmall" style="font-size:9px; word-break:break-word; display:block">{% if task.done %}<s>{{ task.text }}</s>{% else %}{{ task.text }}{% endif %}</span>
                 </div>
               {% endif %}
             {% endfor %}
