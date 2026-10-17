@@ -17,3 +17,6 @@ tweek/bin/
 
 # trmnlp build output
 tweek/_build/
+
+# Playwright MCP screenshots/snapshots
+.playwright-mcp/
