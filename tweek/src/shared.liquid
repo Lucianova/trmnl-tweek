@@ -11,10 +11,10 @@
 {% template task_card %}
 {% if task.gcal %}
   <div class="bg--black rounded--small p--1 no-shrink">
-    <span class="label label--small lg:label--base label--inverted block">{% if task.time %}<strong>{{ task.time }}</strong> {% endif %}{% if task.done %}<s>{{ task.text }}</s>{% else %}{{ task.text }}{% endif %}{% if task.all_day %} (all-day){% endif %}</span>
+    <span class="label label--small lg:label--base label--inverted block">{% if task.time %}<strong class="font--bold">{{ task.time }}</strong> {% endif %}{% if task.done %}<s>{{ task.text }}</s>{% else %}{{ task.text }}{% endif %}{% if task.all_day %} (all-day){% endif %}</span>
   </div>
 {% else %}
-  <span class="label label--small lg:label--base label--outline rounded--small p--1 block no-shrink">{% if task.time %}<strong>{{ task.time }}</strong> {% endif %}{% if task.done %}<s>{{ task.text }}</s>{% else %}{{ task.text }}{% endif %}</span>
+  <span class="label label--small lg:label--base label--outline rounded--small p--1 block no-shrink">{% if task.time %}<strong class="font--bold">{{ task.time }}</strong> {% endif %}{% if task.done %}<s>{{ task.text }}</s>{% else %}{{ task.text }}{% endif %}</span>
 {% endif %}
 {% endtemplate %}
 
