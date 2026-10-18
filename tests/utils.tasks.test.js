@@ -159,3 +159,30 @@ test('groupTasksByDay carries the done flag through (drives the strikethrough)',
   const mon = groupTasksByDay(tasks, '2026-05-11', '24h').find(d => d.full_date === '2026-05-11')
   expect(mon.tasks.map(t => t.done)).toEqual([true, false])
 })
+
+test.each([
+  ['24h', '23:00'],
+  ['12h', '11:00 PM'],
+])('groupTasksByDay sets the time on a timed to-do (%s)', (timeFormat, expected) => {
+  const tasks = [{ text: 'Deploy plugin', date: '2026-05-11', isoDate: '2026-05-11T23:00:00-03:00', gcal: false, done: false }]
+  const mon = groupTasksByDay(tasks, '2026-05-11', timeFormat)[0]
+  expect(mon.tasks[0]).toEqual({ text: 'Deploy plugin', time: expected, gcal: false, all_day: false, done: false })
+})
+
+test('groupTasksByDay interleaves timed to-dos with timed events', () => {
+  const tasks = [
+    { text: 'Untimed to-do', date: '2026-05-12', gcal: false, done: false },
+    { text: 'Evening to-do', date: '2026-05-12', isoDate: '2026-05-12T23:00:00-03:00', gcal: false, done: true },
+    { text: 'Retro', date: '2026-05-12', isoDate: '2026-05-12T18:00:00-03:00', gcal: true, done: false },
+    { text: 'Morning to-do', date: '2026-05-12', isoDate: '2026-05-12T09:00:00-03:00', gcal: false, done: false },
+    { text: 'Conference', date: '2026-05-12', isoDate: null, gcal: true, done: false },
+  ]
+  const tue = groupTasksByDay(tasks, '2026-05-11', '24h').find(d => d.full_date === '2026-05-12')
+  expect(tue.tasks.map(t => [t.text, t.time])).toEqual([
+    ['Conference', null],
+    ['Morning to-do', '09:00'],
+    ['Retro', '18:00'],
+    ['Evening to-do', '23:00'],
+    ['Untimed to-do', null],
+  ])
+})

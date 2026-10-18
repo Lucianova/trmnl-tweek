@@ -36,7 +36,7 @@ variables:
   week_label: "Aug 24–30"
   error: null
   # Sample week for local preview. Tasks are pre-ordered the way the transform
-  # sorts them (all-day → timed by time → to-dos) since full.liquid renders as-is.
+  # sorts them (all-day → timed events and to-dos by time → untimed to-dos) since full.liquid renders as-is.
   days:
     - name: Mon
       date: "24"
@@ -61,6 +61,8 @@ variables:
       overflow: 0
       tasks:
         - { text: "Design review", time: "11:00 AM", gcal: true, done: false }
+        # Regular Tweek to-do with a time: sorts with timed events, outlined card
+        - { text: "Pay rent", time: "8:00 PM", gcal: false, done: false }
         - { text: "Water the plants", time: null, gcal: false, done: false }
     - name: Thu
       date: "27"

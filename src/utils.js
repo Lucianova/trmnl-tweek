@@ -49,12 +49,13 @@ export function formatTime(isoDate, timeFormat) {
   return `${h12}:${String(m).padStart(2, '0')} ${period}`
 }
 
-// Sort key within a day: all-day events first (0), then timed events by time-of-day
-// (1), then untimed to-dos (2). Tweek exposes no order field, so this is our ordering.
-// For recurring events isoDate's date is the series start — only the time is used.
+// Sort key within a day: all-day events first (0), then everything with a time —
+// events and to-dos interleaved by time-of-day (1), then untimed to-dos (2). Tweek
+// exposes no order field, so this is our ordering. For recurring items isoDate's date
+// is the series start — only the time is used.
 function dayOrder(t) {
   if (t.gcal && !t.isoDate) return [0, 0]
-  if (t.gcal && t.isoDate) {
+  if (t.isoDate) {
     const [h, m] = t.isoDate.slice(11, 16).split(':').map(Number)
     return [1, h * 60 + m]
   }
@@ -79,8 +80,9 @@ export function groupTasksByDay(tasks, dateFrom, timeFormat) {
       })
       .map(t => ({
         text: t.text,
-        // All-day gcal events have isoDate: null — show title only, never crash.
-        time: t.gcal && t.isoDate ? formatTime(t.isoDate, timeFormat) : null,
+        // Timed events and timed to-dos carry an isoDate; all-day events (isoDate: null)
+        // and untimed to-dos (no isoDate) show their title only.
+        time: t.isoDate ? formatTime(t.isoDate, timeFormat) : null,
         gcal: t.gcal,
         // A gcal event with no time spans the whole day — flag it for an "(all-day)" label.
         all_day: Boolean(t.gcal && !t.isoDate),

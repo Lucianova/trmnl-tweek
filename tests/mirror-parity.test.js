@@ -16,6 +16,7 @@ const SAMPLE_TASKS = [
   { text: 'All day', date: '2026-05-12', isoDate: null, gcal: true, done: false },
   { text: 'Standup', date: '2026-05-12', isoDate: '2026-05-12T09:00:00-03:00', gcal: true, done: true },
   { text: 'Buy milk', date: '2026-05-13', gcal: false, done: false },
+  { text: 'Timed to-do', date: '2026-05-13', isoDate: '2026-05-13T07:30:00-03:00', gcal: false, done: false },
 ]
 
 test.each([
