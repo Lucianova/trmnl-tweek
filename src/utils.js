@@ -96,3 +96,16 @@ export function groupTasksByDay(tasks, dateFrom, timeFormat) {
   }
   return days
 }
+
+// TRMNL polls Tweek and hands the transform the parsed body even when the request
+// failed, so read the outcome from the body itself: a task list under `data`, or
+// a Tweek error that carries its own status, e.g. {"message":"...","statusCode":404}.
+// Returns a short, actionable line for the e-ink screen, or null when tasks arrived.
+export function responseError(response) {
+  if (response && Array.isArray(response.data)) return null
+  const status = response && response.statusCode
+  if (status === 404) return 'Calendar not found — check your Calendar ID in the plugin settings.'
+  if (status === 401 || status === 403) return 'Check your Tweek API key in the plugin settings.'
+  if (status === 429) return "Tweek's API limit is used up for this month."
+  return "Couldn't reach Tweek. It will retry on the next refresh."
+}

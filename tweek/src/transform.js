@@ -1,6 +1,4 @@
 // ─── Constants ────────────────────────────────────────────────────────────────
-const TASKS_URL = 'https://tweek.so/api/v1/tasks'
-const REQUEST_TIMEOUT_MS = 4000
 const MAX_TASKS_PER_DAY = 8
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -101,63 +99,41 @@ function groupTasksByDay(tasks, dateFrom, timeFormat) {
   return days
 }
 
-// ─── HTTP helpers ──────────────────────────────────────────────────────────────
-
-async function fetchTasks(apiKey, calendarId, dateFrom, dateTo) {
-  // expand=occurrences makes Tweek expand recurring events server-side into
-  // per-day occurrences within the window — matching exactly what the app shows.
-  const url = `${TASKS_URL}?calendarId=${calendarId}&dateFrom=${dateFrom}&dateTo=${dateTo}&expand=occurrences`
-  // Abort a slow request before TRMNL's hard 5s kill, so we can surface a
-  // friendly "retry" message instead of an opaque platform timeout.
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
-  let res
-  try {
-    res = await fetch(url, {
-      headers: { 'X-API-Key': apiKey, 'Content-Type': 'application/json' },
-      signal: controller.signal,
-    })
-  } catch (err) {
-    if (err.name === 'AbortError') throw new Error('TIMEOUT')
-    throw err
-  } finally {
-    clearTimeout(timer)
-  }
-  if (!res.ok) throw new Error(`Tasks fetch failed: ${res.status}`)
-  const body = await res.json()
-  return body.data
+// TRMNL polls Tweek and hands the transform the parsed body even when the request
+// failed, so read the outcome from the body itself: a task list under `data`, or
+// a Tweek error that carries its own status, e.g. {"message":"...","statusCode":404}.
+// Returns a short, actionable line for the e-ink screen, or null when tasks arrived.
+function responseError(response) {
+  if (response && Array.isArray(response.data)) return null
+  const status = response && response.statusCode
+  if (status === 404) return 'Calendar not found — check your Calendar ID in the plugin settings.'
+  if (status === 401 || status === 403) return 'Check your Tweek API key in the plugin settings.'
+  if (status === 429) return "Tweek's API limit is used up for this month."
+  return "Couldn't reach Tweek. It will retry on the next refresh."
 }
 
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
-// Map raw fetch/validation errors to a short, actionable line for the e-ink screen.
-function friendlyError(message) {
-  if (message === 'MISSING_CALENDAR_ID') return 'Add your Tweek Calendar ID in the plugin settings.'
-  if (message === 'TIMEOUT') return 'Tweek is slow right now — it will retry on the next refresh.'
-  if (/\b404\b/.test(message)) return 'Calendar not found — check your Calendar ID in the plugin settings.'
-  if (/\b40[13]\b/.test(message)) return 'Check your Tweek API key in the plugin settings.'
-  return "Couldn't reach Tweek. It will retry on the next refresh."
-}
-
-async function run(input) {
+// TRMNL fetches the tasks itself (polling_url in settings.yml) before this runs, so
+// the request no longer counts against the transform's time limit. The polled
+// window is padded to ±8 days; groupTasksByDay keeps only the user's current week.
+function run(input) {
+  const errorResult = message => ({ week_label: '', days: [], error: message })
   try {
     const {
-      api_key: apiKey,
       calendar_id: calendarId = '',
       week_start_day: weekStartDay = 'Monday',
       time_format: timeFormat = '12h',
     } = input.trmnl.plugin_settings.custom_fields_values
     const utcOffsetSeconds = input.trmnl.user && input.trmnl.user.utc_offset || 0
 
-    // Validate before fetching: an empty calendarId makes Tweek return a 500.
-    if (!calendarId || !calendarId.trim()) throw new Error('MISSING_CALENDAR_ID')
+    if (!calendarId.trim()) return errorResult('Add your Tweek Calendar ID in the plugin settings.')
+    const error = responseError(input)
+    if (error) return errorResult(error)
 
-    const { dateFrom, dateTo, weekLabel } = getWeekDateRange(weekStartDay, Date.now(), utcOffsetSeconds)
-    const rawTasks = await fetchTasks(apiKey, calendarId.trim(), dateFrom, dateTo)
-    const days = groupTasksByDay(rawTasks, dateFrom, timeFormat)
-
-    return { week_label: weekLabel, days, error: null }
+    const { dateFrom, weekLabel } = getWeekDateRange(weekStartDay, Date.now(), utcOffsetSeconds)
+    return { week_label: weekLabel, days: groupTasksByDay(input.data, dateFrom, timeFormat), error: null }
   } catch (err) {
-    return { week_label: '', days: [], error: friendlyError(err.message) }
+    return errorResult("Couldn't reach Tweek. It will retry on the next refresh.")
   }
 }

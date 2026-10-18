@@ -8,17 +8,19 @@
 ## Features
 
 - 📅 7-column week view of your Tweek tasks and events
-- 🖥️ Designed for the **full landscape** layout (half and quadrant show a "best viewed at full size" notice)
-- 🔄 Self-contained — a serverless function fetches and shapes the data on every poll (refreshes every 30 min)
+- 🖥️ Every layout size: **Full** and **Half Horizontal** show the week grid (Full splits into two rows in portrait), **Half Vertical** an agenda from today, and **Quadrant** just today
+- 🔄 Self-contained — TRMNL fetches your tasks and a small transform shapes them into the week (refreshes every 30 min)
 - ⚙️ Configurable calendar (by ID), week start day (Mon/Sun), and 12h/24h time format
 
 ## How it works
 
-The plugin uses TRMNL's **polling + serverless** strategy. On each refresh, `tweek/src/transform.js` runs on TRMNL's infrastructure and:
+The plugin uses TRMNL's **polling** strategy with a transform. On each refresh:
 
-1. Authenticates to the Tweek API with your API key
-2. Fetches the current week's tasks for your Calendar ID in a single request, letting Tweek expand recurring events into per-day occurrences (`expand=occurrences`)
-3. Returns merge variables that the Liquid templates render into the week grid
+1. TRMNL calls the Tweek API itself (the polling URL in `tweek/src/settings.yml`), sending your API key as the `X-API-Key` header. It asks for a window of ±8 days around today, so the URL needs no timezone or week-start logic, and lets Tweek expand recurring events into per-day occurrences (`expand=occurrences`)
+2. `tweek/src/transform.js` picks your current week out of that window (honouring your timezone and week start day) and turns Tweek errors into a short message on screen
+3. The Liquid templates render the result. Each layout (`full`, `half_horizontal`, `half_vertical`, `quadrant`) is a few lines; the shared pieces (task card, day header, week grid, title bar) live in `tweek/src/shared.liquid`, which TRMNL prepends to every layout
+
+Because TRMNL makes the request before the transform runs, the API call doesn't count against the transform's 5-second limit.
 
 ## Setup
 

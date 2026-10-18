@@ -5,11 +5,11 @@ import * as utils from '../src/utils.js'
 // pure functions from src/utils.js. Load those copies (the file has no exports of
 // its own) and assert they behave identically — this fails if the two drift, so
 // the "keep in sync" note can't silently rot. Importing only executes top-level
-// const/function declarations; no fetch runs.
+// const/function declarations; nothing runs.
 const src = readFileSync(new URL('../tweek/src/transform.js', import.meta.url), 'utf8')
 const dataUrl =
   'data:text/javascript;base64,' +
-  Buffer.from(src + '\nexport { getWeekDateRange, formatTime, groupTasksByDay }').toString('base64')
+  Buffer.from(src + '\nexport { getWeekDateRange, formatTime, groupTasksByDay, responseError }').toString('base64')
 const mirror = await import(dataUrl)
 
 const SAMPLE_TASKS = [
@@ -38,4 +38,14 @@ test('groupTasksByDay parity', () => {
   expect(mirror.groupTasksByDay(SAMPLE_TASKS, '2026-05-11', '12h')).toEqual(
     utils.groupTasksByDay(SAMPLE_TASKS, '2026-05-11', '12h'),
   )
+})
+
+test.each([
+  [{ data: [], nextDocId: null }],
+  [{ message: 'Calendar not found', error: 'Not Found', statusCode: 404 }],
+  [{ message: 'Invalid API key', error: 'Unauthorized', statusCode: 401 }],
+  [{ statusCode: 429 }],
+  [{}],
+])('responseError parity (%o)', body => {
+  expect(mirror.responseError(body)).toBe(utils.responseError(body))
 })
