@@ -48,6 +48,8 @@ trmnlp serve -d tweek  # local preview with mock data
 trmnlp push -d tweek   # upload to the TRMNL server
 ```
 
+The plugin targets TRMNL Framework 3.4.3, so local preview and lint need a recent `trmnl_preview` gem (`gem install trmnl_preview`; CI always installs the latest). Older versions reject the framework version.
+
 Pure date/task utilities live in `src/utils.js` and are mirrored into `tweek/src/transform.js` (which must be self-contained for TRMNL) — keep the two in sync.
 
 ## Notes
