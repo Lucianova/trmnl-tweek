@@ -9,7 +9,7 @@ import * as utils from '../src/utils.js'
 const src = readFileSync(new URL('../tweek/src/transform.js', import.meta.url), 'utf8')
 const dataUrl =
   'data:text/javascript;base64,' +
-  Buffer.from(src + '\nexport { getWeekDateRange, formatTime, groupTasksByDay, responseError }').toString('base64')
+  Buffer.from(src + '\nexport { getWeekDateRange, formatTime, groupTasksByDay, responseError, settingOn }').toString('base64')
 const mirror = await import(dataUrl)
 
 const SAMPLE_TASKS = [
@@ -35,10 +35,14 @@ test.each([
   expect(mirror.formatTime(iso, fmt)).toBe(utils.formatTime(iso, fmt))
 })
 
-test('groupTasksByDay parity', () => {
-  expect(mirror.groupTasksByDay(SAMPLE_TASKS, '2026-05-11', '12h')).toEqual(
-    utils.groupTasksByDay(SAMPLE_TASKS, '2026-05-11', '12h'),
+test.each([[{}], [{ showCompleted: false }]])('groupTasksByDay parity (%o)', options => {
+  expect(mirror.groupTasksByDay(SAMPLE_TASKS, '2026-05-11', '12h', options)).toEqual(
+    utils.groupTasksByDay(SAMPLE_TASKS, '2026-05-11', '12h', options),
   )
+})
+
+test.each([[true], ['false'], [undefined], ['']])('settingOn parity (%o)', value => {
+  expect(mirror.settingOn(value, true)).toBe(utils.settingOn(value, true))
 })
 
 test.each([

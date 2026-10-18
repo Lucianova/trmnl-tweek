@@ -62,14 +62,23 @@ function dayOrder(t) {
   return [2, 0]
 }
 
-export function groupTasksByDay(tasks, dateFrom, timeFormat) {
+// TRMNL may deliver a boolean field as true/false or as "true"/"false", and a field
+// added after an install has no value until the form is saved — that means its default.
+export function settingOn(value, fallback) {
+  if (value === undefined || value === null || value === '') return fallback
+  return ['true', 'yes', '1'].includes(String(value).toLowerCase())
+}
+
+export function groupTasksByDay(tasks, dateFrom, timeFormat, { showCompleted = true } = {}) {
   const days = []
   const startMs = Date.parse(dateFrom + 'T00:00:00Z')
+  // Hidden before grouping, so "+N more" counts only what the user chose to see.
+  const visible = showCompleted ? tasks : tasks.filter(t => !t.done)
   for (let i = 0; i < 7; i++) {
     const dayMs = startMs + i * 86400000
     const d = new Date(dayMs)
     const fullDate = toISODate(d)
-    const dayTasks = tasks
+    const dayTasks = visible
       // Google Calendar events vary in shape: recurring events carry dtStart
       // (no date), and some carry only isoDate. Fall back through all three.
       .filter(t => (t.date || t.dtStart || (t.isoDate && t.isoDate.slice(0, 10))) === fullDate)

@@ -15,6 +15,7 @@ custom_fields:
   calendar_id: "your_calendar_id_here"
   week_start_day: "Monday"
   time_format: "12h"
+  show_completed: true
 
 # Mock the {{ trmnl }} global for local preview
 variables:

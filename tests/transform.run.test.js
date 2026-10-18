@@ -54,3 +54,20 @@ test('blank Calendar ID', () => {
 test('input without plugin settings', () => {
   expect(run({ data: [] }).error).toBe("Couldn't reach Tweek. It will retry on the next refresh.")
 })
+
+test('completed tasks with show_completed turned off', () => {
+  vi.useFakeTimers({ now: WED_MAY_13 })
+  onTestFinished(() => vi.useRealTimers())
+  const response = {
+    data: [
+      { text: 'Done', date: '2026-05-13', gcal: false, done: true },
+      { text: 'Open', date: '2026-05-13', gcal: false, done: false },
+    ],
+  }
+
+  const texts = settings => run(createInput(response, settings)).days.flatMap(d => d.tasks.map(t => t.text))
+
+  expect(texts({ show_completed: 'false' })).toEqual(['Open'])
+  expect(texts({ show_completed: true })).toEqual(['Done', 'Open'])
+  expect(texts({})).toEqual(['Done', 'Open'])
+})

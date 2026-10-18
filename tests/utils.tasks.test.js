@@ -1,4 +1,4 @@
-import { formatTime, groupTasksByDay } from '../src/utils.js'
+import { formatTime, groupTasksByDay, settingOn } from '../src/utils.js'
 
 // --- formatTime ---
 
@@ -185,4 +185,35 @@ test('groupTasksByDay interleaves timed to-dos with timed events', () => {
     ['Evening to-do', '23:00'],
     ['Untimed to-do', null],
   ])
+})
+
+test('groupTasksByDay with completed tasks hidden', () => {
+  const tasks = [
+    ...Array.from({ length: 9 }, (_, i) => ({ text: `Open ${i}`, date: '2026-05-11', gcal: false, done: false })),
+    { text: 'Finished', date: '2026-05-11', gcal: false, done: true },
+    { text: 'Finished event', date: '2026-05-11', isoDate: '2026-05-11T08:00:00-03:00', gcal: true, done: true },
+  ]
+  const mon = groupTasksByDay(tasks, '2026-05-11', '24h', { showCompleted: false })[0]
+  expect(mon.tasks.some(t => t.done)).toBe(false)
+  expect(mon.tasks).toHaveLength(8)
+  expect(mon.overflow).toBe(1)
+})
+
+test('groupTasksByDay shows completed tasks by default', () => {
+  const tasks = [{ text: 'Finished', date: '2026-05-11', gcal: false, done: true }]
+  expect(groupTasksByDay(tasks, '2026-05-11', '24h')[0].tasks).toHaveLength(1)
+})
+
+test.each([
+  [true, false, true],
+  ['true', false, true],
+  ['yes', false, true],
+  [false, true, false],
+  ['false', true, false],
+  ['no', true, false],
+  [undefined, true, true],
+  [null, false, false],
+  ['', true, true],
+])('settingOn(%o) with fallback %o', (value, fallback, expected) => {
+  expect(settingOn(value, fallback)).toBe(expected)
 })

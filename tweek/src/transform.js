@@ -64,14 +64,23 @@ function dayOrder(t) {
   return [2, 0]
 }
 
-function groupTasksByDay(tasks, dateFrom, timeFormat) {
+// TRMNL may deliver a boolean field as true/false or as "true"/"false", and a field
+// added after an install has no value until the form is saved — that means its default.
+function settingOn(value, fallback) {
+  if (value === undefined || value === null || value === '') return fallback
+  return ['true', 'yes', '1'].includes(String(value).toLowerCase())
+}
+
+function groupTasksByDay(tasks, dateFrom, timeFormat, { showCompleted = true } = {}) {
   const days = []
   const startMs = Date.parse(dateFrom + 'T00:00:00Z')
+  // Hidden before grouping, so "+N more" counts only what the user chose to see.
+  const visible = showCompleted ? tasks : tasks.filter(t => !t.done)
   for (let i = 0; i < 7; i++) {
     const dayMs = startMs + i * 86400000
     const d = new Date(dayMs)
     const fullDate = toISODate(d)
-    const dayTasks = tasks
+    const dayTasks = visible
       // Google Calendar events vary in shape: recurring events carry dtStart
       // (no date), and some carry only isoDate. Fall back through all three.
       .filter(t => (t.date || t.dtStart || (t.isoDate && t.isoDate.slice(0, 10))) === fullDate)
@@ -126,6 +135,7 @@ function run(input) {
       calendar_id: calendarId = '',
       week_start_day: weekStartDay = 'Monday',
       time_format: timeFormat = '12h',
+      show_completed: showCompleted,
     } = input.trmnl.plugin_settings.custom_fields_values
     const utcOffsetSeconds = input.trmnl.user && input.trmnl.user.utc_offset || 0
 
@@ -134,7 +144,8 @@ function run(input) {
     if (error) return errorResult(error)
 
     const { dateFrom, weekLabel } = getWeekDateRange(weekStartDay, Date.now(), utcOffsetSeconds)
-    return { week_label: weekLabel, days: groupTasksByDay(input.data, dateFrom, timeFormat), error: null }
+    const days = groupTasksByDay(input.data, dateFrom, timeFormat, { showCompleted: settingOn(showCompleted, true) })
+    return { week_label: weekLabel, days, error: null }
   } catch (err) {
     return errorResult("Couldn't reach Tweek. It will retry on the next refresh.")
   }

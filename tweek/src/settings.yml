@@ -39,6 +39,12 @@ custom_fields:
   options:
   - 12h
   - 24h
+- keyname: show_completed
+  name: Show Completed Tasks
+  field_type: boolean
+  default: true
+  optional: true
+  description: Completed tasks appear crossed out. Turn this off to hide them.
 - keyname: plugin_info
   name: Tweek for TRMNL
   field_type: author_bio
