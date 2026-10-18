@@ -2,8 +2,8 @@
   TRMNL prepends this file to every layout. It holds what the layouts share:
   "today" in the user's timezone, and the partials below. Layouts call a partial
   with render and pass it every variable it uses; partials don't inherit any.
-  Custom fields: api_key and calendar_id feed the polling URL/headers; week_start_day
-  and time_format are read by the transform.
+  Custom fields: api_key and calendar_id feed the polling URL/headers; week_start_day,
+  time_format, date_format, show_completed and show_week_number are read by the transform.
 {% endcomment %}
 {% assign today = trmnl.system.timestamp_utc | plus: trmnl.user.utc_offset | date: "%Y-%m-%d" %}
 
@@ -11,10 +11,10 @@
 {% template task_card %}
 {% if task.gcal %}
   <div class="bg--black rounded--small p--1 no-shrink">
-    <span class="label label--small lg:label--base label--inverted block">{% if task.time %}<strong class="font--bold">{{ task.time }}</strong> {% endif %}{% if task.done %}<s>{{ task.text }}</s>{% else %}{{ task.text }}{% endif %}{% if task.all_day %} (all-day){% endif %}</span>
+    <span class="label label--small lg:label--base label--inverted block">{% if task.time %}<strong class="text--bold">{{ task.time }}</strong> {% endif %}{% if task.done %}<s>{{ task.text }}</s>{% else %}{{ task.text }}{% endif %}{% if task.all_day %} (all-day){% endif %}</span>
   </div>
 {% else %}
-  <span class="label label--small lg:label--base label--outline rounded--small p--1 block no-shrink">{% if task.time %}<strong class="font--bold">{{ task.time }}</strong> {% endif %}{% if task.done %}<s>{{ task.text }}</s>{% else %}{{ task.text }}{% endif %}</span>
+  <span class="label label--small lg:label--base label--outline rounded--small p--1 block no-shrink">{% if task.time %}<strong class="text--bold">{{ task.time }}</strong> {% endif %}{% if task.done %}<s>{{ task.text }}</s>{% else %}{{ task.text }}{% endif %}</span>
 {% endif %}
 {% endtemplate %}
 
