@@ -217,3 +217,10 @@ test.each([
 ])('settingOn(%o) with fallback %o', (value, fallback, expected) => {
   expect(settingOn(value, fallback)).toBe(expected)
 })
+
+test.each([
+  ['md', ['5/11', '5/12', '5/13', '5/14', '5/15', '5/16', '5/17']],
+  ['dm', ['11/5', '12/5', '13/5', '14/5', '15/5', '16/5', '17/5']],
+])('groupTasksByDay date labels in %s format', (dateFormat, expected) => {
+  expect(groupTasksByDay([], '2026-05-11', '24h', { dateFormat }).map(d => d.date_label)).toEqual(expected)
+})

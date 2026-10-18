@@ -71,3 +71,23 @@ test('completed tasks with show_completed turned off', () => {
   expect(texts({ show_completed: true })).toEqual(['Done', 'Open'])
   expect(texts({})).toEqual(['Done', 'Open'])
 })
+
+test('day/month dates and the week number', () => {
+  vi.useFakeTimers({ now: WED_MAY_13 })
+  onTestFinished(() => vi.useRealTimers())
+
+  const result = run(createInput({ data: [] }, { date_format: 'dm', show_week_number: 'true' }))
+
+  expect(result.week_label).toBe('11–17 May — Week 20')
+  expect(result.days[0].date_label).toBe('11/5')
+})
+
+test('date format and week number defaults', () => {
+  vi.useFakeTimers({ now: WED_MAY_13 })
+  onTestFinished(() => vi.useRealTimers())
+
+  const result = run(createInput({ data: [] }))
+
+  expect(result.week_label).toBe('May 11–17')
+  expect(result.days[0].date_label).toBe('5/11')
+})

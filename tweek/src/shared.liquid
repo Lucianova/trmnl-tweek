@@ -22,12 +22,12 @@
 {% template day_header %}
 {% if day.full_date == today %}
   <div class="flex flex--{{ align }} py--1 border--h-3">
-    <span class="label lg:label--large label--inverted rounded--full px--3 py--0">{% if say_today %}Today · {% endif %}{{ day.name }} {{ day.full_date | date: "%-m/%-d" }}</span>
+    <span class="label lg:label--large label--inverted rounded--full px--3 py--0">{% if say_today %}Today · {% endif %}{{ day.name }} {{ day.date_label }}</span>
   </div>
 {% else %}
   <div class="flex flex--row flex--{{ align }} gap--xsmall py--1 border--h-3">
     <span class="label lg:label--large">{{ day.name }}</span>
-    <span class="label lg:label--large">{{ day.full_date | date: "%-m/%-d" }}</span>
+    <span class="label lg:label--large">{{ day.date_label }}</span>
   </div>
 {% endif %}
 {% endtemplate %}

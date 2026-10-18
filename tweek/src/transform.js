@@ -12,15 +12,33 @@ function toISODate(d) {
   return `${y}-${m}-${day}`
 }
 
-function formatWeekLabel(start, end) {
+// Week range in the chosen date format: md → "Aug 24–30" / "Aug 31 – Sep 6",
+// dm → "24–30 Aug" / "31 Aug – 6 Sep".
+function formatWeekLabel(start, end, dateFormat = 'md') {
   const sm = MONTH_NAMES[start.getUTCMonth()]
   const em = MONTH_NAMES[end.getUTCMonth()]
   const sd = start.getUTCDate()
   const ed = end.getUTCDate()
+  if (dateFormat === 'dm') return sm === em ? `${sd}–${ed} ${sm}` : `${sd} ${sm} – ${ed} ${em}`
   return sm === em ? `${sm} ${sd}–${ed}` : `${sm} ${sd} – ${em} ${ed}`
 }
 
-function getWeekDateRange(weekStartDay, nowMs = Date.now(), utcOffsetSeconds = 0) {
+// A day header's date in the chosen format: md → "8/24", dm → "24/8".
+function formatDayLabel(d, dateFormat = 'md') {
+  const month = d.getUTCMonth() + 1
+  const day = d.getUTCDate()
+  return dateFormat === 'dm' ? `${day}/${month}` : `${month}/${day}`
+}
+
+// ISO 8601 week number: weeks start on Monday, and week 1 holds the year's first Thursday.
+function isoWeekNumber(d) {
+  const thursday = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()))
+  thursday.setUTCDate(thursday.getUTCDate() + 4 - (thursday.getUTCDay() || 7))
+  const yearStart = Date.UTC(thursday.getUTCFullYear(), 0, 1)
+  return Math.ceil(((thursday - yearStart) / 86400000 + 1) / 7)
+}
+
+function getWeekDateRange(weekStartDay, nowMs = Date.now(), utcOffsetSeconds = 0, dateFormat = 'md') {
   const startDayNum = String(weekStartDay).toLowerCase() === 'sunday' ? 0 : 1
   // Shift to the user's local wall-clock before deriving the week, so installers
   // in any timezone get the same week (and "today") they see in the Tweek app.
@@ -35,7 +53,10 @@ function getWeekDateRange(weekStartDay, nowMs = Date.now(), utcOffsetSeconds = 0
   return {
     dateFrom: toISODate(startDate),
     dateTo: toISODate(endDate),
-    weekLabel: formatWeekLabel(startDate, endDate),
+    weekLabel: formatWeekLabel(startDate, endDate, dateFormat),
+    // Numbered by the week's Monday — the start itself, or the day after a Sunday
+    // start — since six of the seven days fall in that ISO week either way.
+    weekNumber: isoWeekNumber(new Date(startMs + (startDayNum === 0 ? 86400000 : 0))),
   }
 }
 
@@ -71,7 +92,7 @@ function settingOn(value, fallback) {
   return ['true', 'yes', '1'].includes(String(value).toLowerCase())
 }
 
-function groupTasksByDay(tasks, dateFrom, timeFormat, { showCompleted = true } = {}) {
+function groupTasksByDay(tasks, dateFrom, timeFormat, { showCompleted = true, dateFormat = 'md' } = {}) {
   const days = []
   const startMs = Date.parse(dateFrom + 'T00:00:00Z')
   // Hidden before grouping, so "+N more" counts only what the user chose to see.
@@ -102,6 +123,7 @@ function groupTasksByDay(tasks, dateFrom, timeFormat, { showCompleted = true } =
     days.push({
       name: DAY_NAMES[d.getUTCDay()],
       date: String(d.getUTCDate()),
+      date_label: formatDayLabel(d, dateFormat),
       full_date: fullDate,
       tasks: dayTasks.slice(0, MAX_TASKS_PER_DAY),
       overflow: Math.max(0, dayTasks.length - MAX_TASKS_PER_DAY),
@@ -136,6 +158,8 @@ function run(input) {
       week_start_day: weekStartDay = 'Monday',
       time_format: timeFormat = '12h',
       show_completed: showCompleted,
+      date_format: dateFormatSetting = 'md',
+      show_week_number: showWeekNumber,
     } = input.trmnl.plugin_settings.custom_fields_values
     const utcOffsetSeconds = input.trmnl.user && input.trmnl.user.utc_offset || 0
 
@@ -143,9 +167,11 @@ function run(input) {
     const error = responseError(input)
     if (error) return errorResult(error)
 
-    const { dateFrom, weekLabel } = getWeekDateRange(weekStartDay, Date.now(), utcOffsetSeconds)
-    const days = groupTasksByDay(input.data, dateFrom, timeFormat, { showCompleted: settingOn(showCompleted, true) })
-    return { week_label: weekLabel, days, error: null }
+    const dateFormat = String(dateFormatSetting).toLowerCase() === 'dm' ? 'dm' : 'md'
+    const { dateFrom, weekLabel, weekNumber } = getWeekDateRange(weekStartDay, Date.now(), utcOffsetSeconds, dateFormat)
+    const days = groupTasksByDay(input.data, dateFrom, timeFormat, { showCompleted: settingOn(showCompleted, true), dateFormat })
+    const label = settingOn(showWeekNumber, false) ? `${weekLabel} — Week ${weekNumber}` : weekLabel
+    return { week_label: label, days, error: null }
   } catch (err) {
     return errorResult("Couldn't reach Tweek. It will retry on the next refresh.")
   }

@@ -10,7 +10,7 @@
 - 📅 7-column week view of your Tweek tasks and events
 - 🖥️ Every layout size: **Full** and **Half Horizontal** show the week grid (Full splits into two rows in portrait), **Half Vertical** an agenda from today, and **Quadrant** just today
 - 🔄 Self-contained — TRMNL fetches your tasks and a small transform shapes them into the week (refreshes every 30 min)
-- ⚙️ Configurable calendar (by ID), week start day (Mon/Sun), and 12h/24h time format
+- ⚙️ Configurable calendar (by ID), week start day (Mon/Sun), 12h/24h time, month/day or day/month dates, an optional ISO week number, and whether completed tasks show
 
 ## How it works
 
@@ -35,6 +35,9 @@ Because TRMNL makes the request before the transform runs, the API call doesn't 
    - **Calendar ID** — the `id` from step 2
    - **Week Start Day** — Monday or Sunday
    - **Time Format** — 12h or 24h
+   - **Date Format** — month/day (8/24, the default) or day/month (24/8), for the day headers and the week label
+   - **Show Completed Tasks** — on by default (crossed out); turn off to hide them
+   - **Show Week Number** — off by default; adds the ISO week number to the title bar, e.g. `Oct 12–18 — Week 42`. For Sunday-start weeks it's the ISO week of that week's Monday
 
 ## Development
 
