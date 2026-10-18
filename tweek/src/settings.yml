@@ -39,6 +39,25 @@ custom_fields:
   options:
   - 12h
   - 24h
+- keyname: date_format
+  name: Date Format
+  field_type: select
+  default: md
+  options:
+  - "Month/Day (8/24)": md
+  - "Day/Month (24/8)": dm
+- keyname: show_completed
+  name: Show Completed Tasks
+  field_type: boolean
+  default: true
+  optional: true
+  description: Completed tasks appear crossed out. Turn this off to hide them.
+- keyname: show_week_number
+  name: Show Week Number
+  field_type: boolean
+  default: false
+  optional: true
+  description: Adds the ISO week number to the title bar, e.g. "Oct 12–18 — Week 42".
 - keyname: plugin_info
   name: Tweek for TRMNL
   field_type: author_bio

@@ -1,4 +1,4 @@
-import { getWeekDateRange } from '../src/utils.js'
+import { getWeekDateRange, isoWeekNumber } from '../src/utils.js'
 
 // Monday, 2026-05-11 00:00:00 UTC
 const MON_MAY_11 = 1778457600000
@@ -57,4 +57,34 @@ test('week label spanning two months', () => {
   // Monday 2026-03-30 00:00:00 UTC
   const result = getWeekDateRange('Monday', 1774828800000)
   expect(result.weekLabel).toBe('Mar 30 – Apr 5')
+})
+
+// Monday, 2026-08-31 12:00:00 UTC — its week runs into September
+const MON_AUG_31 = 1788177600000
+
+test.each([
+  ['md', WED_MAY_13, 'May 11–17'],
+  ['dm', WED_MAY_13, '11–17 May'],
+  ['md', MON_AUG_31, 'Aug 31 – Sep 6'],
+  ['dm', MON_AUG_31, '31 Aug – 6 Sep'],
+])('week label in %s format', (dateFormat, now, expected) => {
+  expect(getWeekDateRange('Monday', now, 0, dateFormat).weekLabel).toBe(expected)
+})
+
+test.each([
+  ['2026-01-01', 1],
+  ['2026-12-28', 53],
+  ['2027-01-01', 53],
+  ['2027-01-03', 53],
+  ['2027-01-04', 1],
+  ['2026-05-11', 20],
+])('ISO week number of %s', (isoDate, expected) => {
+  expect(isoWeekNumber(new Date(`${isoDate}T00:00:00Z`))).toBe(expected)
+})
+
+test('week number for a Sunday-start week follows its Monday', () => {
+  const sundayStart = getWeekDateRange('Sunday', WED_MAY_13)
+  expect(sundayStart.dateFrom).toBe('2026-05-10')
+  expect(sundayStart.weekNumber).toBe(20)
+  expect(getWeekDateRange('Monday', WED_MAY_13).weekNumber).toBe(20)
 })

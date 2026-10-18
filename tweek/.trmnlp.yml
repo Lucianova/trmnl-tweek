@@ -15,6 +15,9 @@ custom_fields:
   calendar_id: "your_calendar_id_here"
   week_start_day: "Monday"
   time_format: "12h"
+  date_format: "md"
+  show_completed: true
+  show_week_number: false
 
 # Mock the {{ trmnl }} global for local preview
 variables:
@@ -36,11 +39,12 @@ variables:
   week_label: "Aug 24–30"
   error: null
   # Sample week for local preview. Tasks are pre-ordered the way the transform
-  # sorts them (all-day → timed by time → to-dos) since full.liquid renders as-is.
+  # sorts them (all-day → timed events and to-dos by time → untimed to-dos) since full.liquid renders as-is.
   days:
     - name: Mon
       date: "24"
       full_date: "2026-08-24"
+      date_label: "8/24"
       overflow: 0
       tasks:
         - { text: "Team standup", time: "9:00 AM", gcal: true, done: false }
@@ -48,6 +52,7 @@ variables:
     - name: Tue
       date: "25"
       full_date: "2026-08-25"
+      date_label: "8/25"
       overflow: 0
       tasks:
         # All-day Google event: API returns isoDate: null — flagged all_day, gets "(all-day)" label
@@ -58,13 +63,17 @@ variables:
     - name: Wed
       date: "26"
       full_date: "2026-08-26"
+      date_label: "8/26"
       overflow: 0
       tasks:
         - { text: "Design review", time: "11:00 AM", gcal: true, done: false }
+        # Regular Tweek to-do with a time: sorts with timed events, outlined card
+        - { text: "Pay rent", time: "8:00 PM", gcal: false, done: false }
         - { text: "Water the plants", time: null, gcal: false, done: false }
     - name: Thu
       date: "27"
       full_date: "2026-08-27"
+      date_label: "8/27"
       overflow: 0
       tasks:
         - { text: "1:1 with manager", time: "3:00 PM", gcal: true, done: false }
@@ -72,6 +81,7 @@ variables:
     - name: Fri
       date: "28"
       full_date: "2026-08-28"
+      date_label: "8/28"
       overflow: 2
       tasks:
         - { text: "Team standup", time: "9:00 AM", gcal: true, done: false }
@@ -85,12 +95,14 @@ variables:
     - name: Sat
       date: "29"
       full_date: "2026-08-29"
+      date_label: "8/29"
       overflow: 0
       tasks:
         - { text: "Farmers market", time: "10:00 AM", gcal: true, done: false }
     - name: Sun
       date: "30"
       full_date: "2026-08-30"
+      date_label: "8/30"
       overflow: 0
       tasks:
         - { text: "Family brunch", time: "11:00 AM", gcal: true, done: false }
