@@ -3,11 +3,11 @@ strategy: polling
 no_screen_padding: 'no'
 dark_mode: 'no'
 static_data: ''
-polling_verb: post
+polling_verb: get
 framework_version: 3.1.1
 serverless_language: node
-polling_url: ''
-polling_headers: ''
+polling_url: "https://tweek.so/api/v1/tasks?calendarId={{ calendar_id | strip }}&dateFrom={{ trmnl.system.timestamp_utc | minus: 691200 | date: '%Y-%m-%d' }}&dateTo={{ trmnl.system.timestamp_utc | plus: 691200 | date: '%Y-%m-%d' }}&expand=occurrences"
+polling_headers: 'X-API-Key: {{ api_key }}'
 polling_body: ''
 id: 305419
 custom_fields:
