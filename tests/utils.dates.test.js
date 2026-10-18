@@ -50,7 +50,7 @@ test('week window uses the user utc offset, not UTC', () => {
 
 test('week label same month', () => {
   const result = getWeekDateRange('Monday', WED_MAY_13)
-  expect(result.weekLabel).toBe('May 11–17')
+  expect(result.weekLabel).toBe('May 11 – 17')
 })
 
 test('week label spanning two months', () => {
@@ -63,8 +63,8 @@ test('week label spanning two months', () => {
 const MON_AUG_31 = 1788177600000
 
 test.each([
-  ['md', WED_MAY_13, 'May 11–17'],
-  ['dm', WED_MAY_13, '11–17 May'],
+  ['md', WED_MAY_13, 'May 11 – 17'],
+  ['dm', WED_MAY_13, '11 – 17 May'],
   ['md', MON_AUG_31, 'Aug 31 – Sep 6'],
   ['dm', MON_AUG_31, '31 Aug – 6 Sep'],
 ])('week label in %s format', (dateFormat, now, expected) => {

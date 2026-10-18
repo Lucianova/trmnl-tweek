@@ -37,7 +37,7 @@ Because TRMNL makes the request before the transform runs, the API call doesn't 
    - **Time Format** — 12h or 24h
    - **Date Format** — month/day (8/24, the default) or day/month (24/8), for the day headers and the week label
    - **Show Completed Tasks** — on by default (crossed out); turn off to hide them
-   - **Show Week Number** — off by default; adds the ISO week number to the title bar, e.g. `Oct 12–18 — Week 42`. For Sunday-start weeks it's the ISO week of that week's Monday
+   - **Show Week Number** — off by default; adds the ISO week number to the title bar, e.g. `Tweek | Oct 12 – 18 | Week 42`. For Sunday-start weeks it's the ISO week of that week's Monday
 
 ## Development
 

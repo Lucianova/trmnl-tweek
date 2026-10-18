@@ -57,7 +57,7 @@ custom_fields:
   field_type: boolean
   default: false
   optional: true
-  description: Adds the ISO week number to the title bar, e.g. "Oct 12–18 — Week 42".
+  description: Adds the ISO week number to the title bar, e.g. "Tweek | Oct 12 – 18 | Week 42".
 - keyname: plugin_info
   name: Tweek for TRMNL
   field_type: author_bio

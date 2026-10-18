@@ -8,15 +8,15 @@ function toISODate(d) {
   return `${y}-${m}-${day}`
 }
 
-// Week range in the chosen date format: md → "Aug 24–30" / "Aug 31 – Sep 6",
-// dm → "24–30 Aug" / "31 Aug – 6 Sep".
+// Week range in the chosen date format: md → "Aug 24 – 30" / "Aug 31 – Sep 6",
+// dm → "24 – 30 Aug" / "31 Aug – 6 Sep".
 function formatWeekLabel(start, end, dateFormat = 'md') {
   const sm = MONTH_NAMES[start.getUTCMonth()]
   const em = MONTH_NAMES[end.getUTCMonth()]
   const sd = start.getUTCDate()
   const ed = end.getUTCDate()
-  if (dateFormat === 'dm') return sm === em ? `${sd}–${ed} ${sm}` : `${sd} ${sm} – ${ed} ${em}`
-  return sm === em ? `${sm} ${sd}–${ed}` : `${sm} ${sd} – ${em} ${ed}`
+  if (dateFormat === 'dm') return sm === em ? `${sd} – ${ed} ${sm}` : `${sd} ${sm} – ${ed} ${em}`
+  return sm === em ? `${sm} ${sd} – ${ed}` : `${sm} ${sd} – ${em} ${ed}`
 }
 
 // A day header's date in the chosen format: md → "8/24", dm → "24/8".

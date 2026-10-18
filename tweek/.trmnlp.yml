@@ -36,7 +36,7 @@ variables:
       instance_name: "Tweek"
       strategy: "polling"
       dark_mode: "no"
-  week_label: "Aug 24–30"
+  week_label: "Aug 24 – 30"
   error: null
   # Sample week for local preview. Tasks are pre-ordered the way the transform
   # sorts them (all-day → timed events and to-dos by time → untimed to-dos) since full.liquid renders as-is.
