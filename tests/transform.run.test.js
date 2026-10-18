@@ -33,7 +33,7 @@ test('polled tasks outside the current week', () => {
   const result = run(createInput(response))
 
   expect(result.error).toBeNull()
-  expect(result.week_label).toBe('May 11–17')
+  expect(result.week_label).toBe('May 11 – 17')
   expect(result.days.flatMap(d => d.tasks.map(t => t.text))).toEqual(['This week'])
 })
 
@@ -78,7 +78,7 @@ test('day/month dates and the week number', () => {
 
   const result = run(createInput({ data: [] }, { date_format: 'dm', show_week_number: 'true' }))
 
-  expect(result.week_label).toBe('11–17 May — Week 20')
+  expect(result.week_label).toBe('11 – 17 May | Week 20')
   expect(result.days[0].date_label).toBe('11/5')
 })
 
@@ -88,6 +88,6 @@ test('date format and week number defaults', () => {
 
   const result = run(createInput({ data: [] }))
 
-  expect(result.week_label).toBe('May 11–17')
+  expect(result.week_label).toBe('May 11 – 17')
   expect(result.days[0].date_label).toBe('5/11')
 })
