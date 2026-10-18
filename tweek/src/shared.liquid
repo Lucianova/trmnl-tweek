@@ -1,6 +1,7 @@
 {% comment %}
   TRMNL prepends this file to every layout. It holds what the layouts share:
-  "today" in the user's timezone, and the partials below ({% render 'name' %}).
+  "today" in the user's timezone, and the partials below. Layouts call a partial
+  with render and pass it every variable it uses; partials don't inherit any.
   Custom fields: api_key and calendar_id feed the polling URL/headers; week_start_day
   and time_format are read by the transform.
 {% endcomment %}
@@ -72,8 +73,9 @@
 </div>
 {% endtemplate %}
 
+{% comment %} Fills the layout and centers the message; the layout itself always stretches {% endcomment %}
 {% template error_state %}
-<div class="flex flex--col flex--center-x gap--xsmall">
+<div class="flex flex--col flex--center-x flex--center-y gap--xsmall stretch">
   <span class="title title--small">Couldn't load your week</span>
   <span class="label label--small label--gray 1bit:text--black text--center">{{ error }}</span>
 </div>
