@@ -2,6 +2,7 @@
   <img src="tweek-logo.png" alt="Tweek logo" width="120" />
   <h1>Tweek for TRMNL</h1>
   <p>A TRMNL e-ink plugin that shows your <a href="https://tweek.so">Tweek</a> calendar as a 7-day week grid.</p>
+  <p><a href="https://trmnl.com/recipes/tweek-305419"><strong>Install it from the TRMNL recipe catalog →</strong></a></p>
   <img src="preview.png" alt="Tweek for TRMNL — 7-day week view" width="640" />
 </div>
 
@@ -30,7 +31,7 @@ Because TRMNL makes the request before the transform runs, the API call doesn't 
    ```bash
    curl -H "X-API-Key: twk_..." https://tweek.so/api/v1/calendars
    ```
-3. **Add the plugin in TRMNL** and fill in the fields:
+3. **Install the [Tweek recipe](https://trmnl.com/recipes/tweek-305419) in TRMNL** and fill in the fields:
    - **API Key** — the value from step 1
    - **Calendar ID** — the `id` from step 2
    - **Week Start Day** — Monday or Sunday
